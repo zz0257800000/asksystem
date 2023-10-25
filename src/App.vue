@@ -7,7 +7,7 @@ import{ RouterLink,RouterView } from 'vue-router'
 
 <template>
   <div class="head">
-    <Header/>
+
 
 
 
@@ -32,8 +32,5 @@ import{ RouterLink,RouterView } from 'vue-router'
   border: 0px solid rgb(255, 19, 19);
   text-align: center;
 }
-.footer{
-  background-color: rgb(0, 0, 0);
-  height: 30vh;
-}
+
 </style>

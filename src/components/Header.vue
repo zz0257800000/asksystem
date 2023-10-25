@@ -21,7 +21,10 @@ export default{
 </script>
 
 <template>
-    <nav class="topNav">
+    <nav class="topNav">   
+         <RouterLink class="routerItem" to="/HomeView">HomeView</RouterLink>
+
+      <RouterLink class="routerItem" to="/askDetail">問卷調查局</RouterLink>
 
 </nav> 
    <!-- <button @click="change"></button>

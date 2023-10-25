@@ -1,57 +1,61 @@
 <script>
+import{ RouterLink,RouterView } from 'vue-router'
 
 export default{
-    data(){
-        return{
-            showDialog: false,
-            username: "",
-        password: "",
-        loginFailed: false,
-          
-        }
-    },
-    methods:{
-        ShowDialog() {
-            this.showDialog = true;
-        },
-
-        closeDialog() {
-            this.showDialog = false;
-        },
-        login() {
-      const enteredUsername = this.enteredUsername;
-      const enteredPassword = this.enteredPassword;
-
-      
-      const registeredUsers = JSON.parse(localStorage.getItem("registeredUsers")) || [];
-      const user = registeredUsers.find((user) => user.username === enteredUsername && user.password === enteredPassword);
-          // 检查输入是否为空
+data(){
+return{
+showDialog: false,
+username: "",
+password: "",
+loginFailed: false,
   
- 
+  }
+},
+methods:{
+ShowDialog() {
+this.showDialog = true;
+},
 
-      if (user) {
-        alert("登录成功");
-        
-        return this.$router.push({ name: 'Vfor' });
+closeDialog() {
+this.showDialog = false;
+},
+login() {
+const enteredUsername = this.enteredUsername;
+const enteredPassword = this.enteredPassword;
 
-        
 
-       
-      }  else   {
-        alert("登录失败，请检查用户名和密码");
-        
-        this.loginFailed = true;
-        this.enteredUsername = "";
-      this.enteredPassword = "";
-      
-        setTimeout(() => {
-          this.loginFailed = false;
-        }, 2000);
-        return;
-        
-      }
-    },
-  },
+const registeredUsers = JSON.parse(localStorage.getItem("registeredUsers")) || [];
+const user = registeredUsers.find((user) => user.username === enteredUsername && user.password === enteredPassword);
+// 检查输入是否为空
+
+
+
+if (user) {
+alert("登录成功");
+
+return this.$router.push({ name: 'Vfor' });
+
+
+
+
+}  else   {
+alert("登录失败，请检查用户名和密码");
+
+this.loginFailed = true;
+this.enteredUsername = "";
+this.enteredPassword = "";
+
+setTimeout(() => {
+this.loginFailed = false;
+}, 2000);
+return;
+
+}
+},
+},
+components:{
+RouterLink
+  }
 }
     
 
@@ -72,6 +76,23 @@ export default{
     <div class="search">
 <input class="searchText" type="text"> 
 <i class="fa-solid fa-magnifying-glass icon"></i>
+ </div>
+ <div class="contentbox">
+<div class="contentboxheader">
+  <div class="title">
+<h1 >問卷標題</h1>
+</div>
+<div class="nexttitle">
+<h1>參與熱度</h1>
+<h1>|</h1>
+
+<h1>操作</h1>
+</div>
+</div>
+<div class="content">
+
+</div>
+
  </div>
  <div class="login-box" v-if="showDialog">
   <h2>Login</h2>
@@ -120,44 +141,82 @@ export default{
 
 }
 .askUserPage{
+background-color: rgb(255, 255, 255);
+border: 0px solid rgb(214, 255, 68);
+height: 100vh;
+width: 100vw;
+display: flex;
+flex-direction: column;
+.askHeader{
+    justify-content: space-around;
+    align-items: center;
+    display: flex;
+    font-size: 16pt;
+    padding: 5px;
   
-    border: 0px solid black;
-    height: 100vh;
+
+    } 
+.askMainPage{
+display: flex;
+    border: 0px solid rgb(203, 255, 59);
+    height: 80vh;
     width: 100vw;
     display: flex;
     flex-direction: column;
-    .askHeader{
-        justify-content: space-around;
-        align-items: center;
-        display: flex;
-        font-size: 16pt;
-        padding: 5px;
-       
+    align-items: center;
 
+
+.search{
+  width: 40vw;
+  display: flex;
+  justify-content: space-around;
+height: 5vh;  
+  border: 0px solid rgb(0, 0, 0);
+  z-index: 2;
+  
+    .searchText{
+        width: 50vw;
+        font-size: 18pt;
     } 
-    .askMainPage{
-        display: flex;
-        justify-content: center;
-            border: 1px solid black;
-            height: 80vh;
-            width: 100vw;
+}
+.contentbox{
+  border: 0px solid rgb(0, 0, 0);
+  height: 80vh;
+  width: 70vw;
+  margin: 10px;
+background-color: white;
+  box-shadow: 1px 8px 20px 0px rgb(255, 255, 255);
 
-            .search{
-                width: 40vw;
-                display: flex;
-                justify-content: space-around;
-              height: 5vh;  
-                border: 1px solid black;
-                
-                .searchText{
-                    width: 50vw;
-                    font-size: 18pt;
+  .contentboxheader{
+    height: 10vh;
+    border: 0px solid rgb(0, 0, 0);
+    background-color: rgb(255, 210, 126);
+    align-items: center;
+    display: flex;
+    justify-content: space-around;
+    .title{   
+       border: 1px solid rgb(0, 0, 0);
 
-                }
+      color: rgb(0, 0, 0);
+      width: 45vw;
+    }
+    .nexttitle{
+      width: 25vw;
+      justify-content: space-around;
 
+      display: flex;
+      border: 1px solid rgb(0, 0, 0);
+    }
+  }
+  .content{
+    border: 0px solid rgb(0, 0, 0);
+    height: 62vh;
+    background-color: rgb(202, 202, 202);
 
-            }
-            .login-box {
+  }
+
+}
+  .login-box {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -317,7 +376,7 @@ export default{
 
         }
         .otherPage{
-            border: 1px solid black;
+            border: 0px solid black;
             height: 10vh;
             width: 100vw;
 

@@ -3,7 +3,8 @@
 export default{
     data(){
         return{
-            
+            showDia: false,
+
           
         }
     },
@@ -15,6 +16,13 @@ export default{
       // 导航到登出页面或首页
       this.$router.push("/askDetail"); // 或者使用首页路径
     },
+    ShowMainDai() {
+            this.showDia = true;
+        },
+
+        CloseMainDai() {
+            this.showDia = false;
+        },
   },
     }
 
@@ -36,14 +44,13 @@ export default{
     <div class="search">
 <input class="searchText" type="text"> 
 <i class="fa-solid fa-magnifying-glass icon"></i>
-
-
-
-
  </div>
 
 
-
+ <div class="userIcon">
+<i class="fa-solid fa-trash fs-2"></i>
+<button @:click="ShowMainDai" > <i class="fa-solid fa-plus fs-2 " ></i></button>
+</div>
 
 </div>
 
@@ -51,22 +58,11 @@ export default{
 
  </div>
 </div>
-<div class="userIcon">
-<i class="fa-solid fa-trash fs-1"></i>
-<i class="fa-solid fa-plus fs-1"></i>
-</div>
+
 
 </template>
 <style lang="scss" scoped>
-.userIcon{
-    position: relative;
-    bottom: 15%;
-    left: 20%;
-    display: flex;
-    justify-content: space-around;
-border: 0px solid black;
-width: 10vw;
-}
+
 .btn{
     font-size: 16pt;
     margin: 10px;
@@ -101,18 +97,29 @@ width: 10vw;
             border: 1px solid black;
             height: 80vh;
             width: 100vw;
-
             .search{
                 width: 40vw;
                 display: flex;
                 justify-content: space-around;
               height: 5vh;  
                 border: 1px solid black;
+                position: relative;
+                left: 7%;
                 
                 .searchText{
                     width: 50vw;
                     font-size: 18pt;
                 }
+            }
+            .userIcon{
+                position: relative;
+                bottom: -1%;
+                right:  44%;
+                display: flex;
+                justify-content: space-around;
+            border: 0px solid black;
+            width: 10vw;
+            
             }
 
         }
