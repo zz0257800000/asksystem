@@ -6,6 +6,7 @@ export default{
             showDia: false,
             selectedOption: "",
                 options: ["選擇題",  ],
+                questionForms: [],
                 
                 
           
@@ -29,6 +30,18 @@ export default{
         addContent() {
                    
                 },
+                addQuestionForm() {
+                    if (this.questionForms.length < 10) {
+                        this.questionForms.push({
+                            question: "",
+                            answer: ""
+                        });
+                    }
+                },
+                removeQuestionForm(index) {
+                    this.questionForms.splice(index, 1);
+                },
+            
   },
   components:{
     askDetail
@@ -57,8 +70,8 @@ export default{
         <br>
         <div class="dispalyset">
          <h3>問卷名稱 :</h3>
-       
-          <input type="text" placeholder="請輸入問卷名稱">
+      
+          <input type="text" placeholder="請輸入問卷名稱" class="asktexttitle">
    
        </div>
        <br>
@@ -69,11 +82,15 @@ export default{
             
         <h3>結束時間</h3>
         <input type="date" name="bday" />
+        <div class="dialog1firstbutton">
+            <button @click="removeQuestionForm(index)">删除</button>
+        <button @click="addQuestionForm">新增問題</button>
         </div>
-        <div class="dialog1content">
+        
+        </div>
+        <div class="dialog1content" v-for="(form, index) in questionForms" :key="index">
             <div class="asktitle">
-            <h3>問題1.</h3>
-            <input type="text" style="width: 500px;" placeholder="請輸入問題">
+                <h3>問題{{ index + 1 }}</h3>            <input type="text" style="width: 500px;" placeholder="請輸入問題">
             <select id="select" v-model="selectedOption" @change="addContent">
                 <option value="">請選擇</option>
                 <option v-for="option in options" :value="option">{{ option }}</option>
@@ -97,16 +114,14 @@ export default{
             <div>
                 <input type="radio" id="radioOption2" name="radioGroup" value="Option 2">
                 <input type="text" style="width: 500px;" placeholder="請輸入回答">
-            </div>
-            <div v-if="selectedType === 'textarea'">
-            <h3>問答題：</h3>
-            <textarea v-model="textAnswer" placeholder="輸入答案"></textarea>
-        </div>
-            
+            </div> 
         </div>
         </div>
         </div>
+        <br>
        
+        <button type="button" @click="ChangePage()" class="continuebutton">確認註冊資訊</button>
+
     </div>
  
 </div>
@@ -134,21 +149,32 @@ export default{
             padding: 50px 100px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
             flex-direction: column;
+            overflow: auto;
             .dispalyset{
                 display: flex;
                 border: 0px solid rgb(0, 0, 0);
                 width: 50vw;
+                .asktexttitle{
+                    font-size: 18pt;
+                    width: 40vw;
+                }
                
             }
 
             .dialog1first{
                 display: flex;
                 border: 0px solid rgb(0, 0, 0);
+
+                .dialog1firstbutton{
+                    position: relative;
+                    left: 10vw;
+                }
              
             }
             .dialog1content{
-                border: 1px solid rgb(0, 0, 0);
+                border: 0px solid rgb(0, 0, 0);
                 height: 30vh;
+                
                 .asktitle{
                     display: flex;
                     
@@ -167,6 +193,10 @@ export default{
                 bottom: 5%;
             }
             
+        }
+        .continuebutton{
+            position: relative;
+            left: 85%;
         }
 }
 .icon{
