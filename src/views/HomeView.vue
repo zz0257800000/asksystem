@@ -32,6 +32,8 @@ export default {
 </script>
 
 <template>
+
+  <Header/>
   <div class="header page">
    
     <div class="right">

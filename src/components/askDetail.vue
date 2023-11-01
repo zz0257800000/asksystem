@@ -74,23 +74,58 @@ RouterLink
  </div>
  <div class="askMainPage">
     <div class="search">
-<input class="searchText" type="text"> 
+<input class="searchText" type="text"  placeholder="請輸入搜尋內容……" > 
 <i class="fa-solid fa-magnifying-glass icon"></i>
+
+
  </div>
+ <div class="daysearch">
+<h1>開始</h1>
+<h1>/</h1>
+<h1>結束</h1>
+<input type="date" name="bday" />
+<input type="date" name="bday" />
+<button>搜尋</button>
+ </div>
+
  <div class="contentbox">
 <div class="contentboxheader">
+  <div class="dash">
+
+  </div>
+  <div class="number">
+    <h1 >#</h1>
+  </div>
   <div class="title">
+    
 <h1 >問卷標題</h1>
 </div>
-<div class="nexttitle">
-<h1>參與熱度</h1>
+<div class="daly">
+<h1>開始時間</h1>
 <h1>|</h1>
 
-<h1>操作</h1>
+<h1>結束時間</h1>
+</div>
+<div class="detail">
+  <h1>觀看統計</h1>
 </div>
 </div>
 <div class="content">
+<div class="dashcontent">
 
+</div>
+<div class="numbercontent">
+  
+</div>
+<div class="titlecontent">
+  
+</div>
+<div class="dalycontent">
+  
+</div>
+<div class="detailcontent">
+  
+</div>
 </div>
 
  </div>
@@ -179,10 +214,14 @@ height: 5vh;
         font-size: 18pt;
     } 
 }
+
+.daysearch{
+  display: flex;
+}
 .contentbox{
   border: 0px solid rgb(0, 0, 0);
   height: 80vh;
-  width: 70vw;
+  width: 80vw;
   margin: 10px;
 background-color: white;
   box-shadow: 1px 8px 20px 0px rgb(255, 255, 255);
@@ -194,24 +233,71 @@ background-color: white;
     align-items: center;
     display: flex;
     justify-content: space-around;
+    .dash{
+      border: 0px solid rgb(0, 0, 0);
+      width: 3vw;
+    }
+    .number{
+      border: 1px solid rgb(0, 0, 0);
+      width: 5vw;
+
+    }
     .title{   
        border: 1px solid rgb(0, 0, 0);
 
       color: rgb(0, 0, 0);
       width: 45vw;
     }
-    .nexttitle{
+    .daly{
       width: 25vw;
       justify-content: space-around;
 
       display: flex;
       border: 1px solid rgb(0, 0, 0);
     }
+    .detail{
+      border: 1px solid rgb(0, 0, 0);
+      width: 12vw;
+
+
+    }
   }
   .content{
-    border: 0px solid rgb(0, 0, 0);
+    border: 1px solid rgb(0, 0, 0);
     height: 62vh;
     background-color: rgb(202, 202, 202);
+
+    display: flex;
+    justify-content: space-around;
+    
+    .dashcontent{
+      border: 1px solid rgb(0, 0, 0);
+      width: 3vw;
+    }
+    .numbercontent{
+      border: 1px solid rgb(0, 0, 0);
+      width: 5vw;
+
+    }
+    .titlecontent{   
+       border: 1px solid rgb(0, 0, 0);
+
+      color: rgb(0, 0, 0);
+      width: 45vw;
+    }
+    .dalycontent{
+      width: 25vw;
+      justify-content: space-around;
+
+      display: flex;
+      border: 1px solid rgb(0, 0, 0);
+    }
+    .detailcontent{
+      border: 1px solid rgb(0, 0, 0);
+      width: 12vw;
+
+
+    }
 
   }
 
