@@ -28,16 +28,12 @@ const router = createRouter({
       component: () => import('../views/HomeWork.vue')
     },
     {
-      path: '/Von',
-      name: 'Von',
-      component: () => import('../views/Von.vue')
+      path: '/child2',
+      name: 'child2',
+      component: () => import('../views/child2.vue')
     }, 
     
-    {
-      path: '/Cake',
-      name: 'Cake',
-      component: () => import('../views/Cake.vue')
-    }, 
+    
     {
       path: '/askDetail',
       name: 'askDetail',

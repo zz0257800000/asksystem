@@ -1,205 +1,262 @@
 <script>
 import askDetail from "./../components/askDetail.vue"
-export default{
-    data(){
-        return{
+import child2 from './child2.vue';
+
+export default {
+    data() {
+        return {
             showDia: false,
             selectedOption: "",
-                options: ["選擇題",  ],
-                questionForms: [],
-                
-                
-          
+            options: ["選擇題",],
+            questionForms: [],
+            textarea: "",
+            keyinfo: {
+                askTitle: "",
+
+                starttime: "",
+                endtime: "",
+                asktexttitle: "",
+                answer: "",
+
+            },
+            page: 1,
+             questions: [
+        {
+          text: '',
+          answers: [
+            { selected: false, text: '' },
+            { selected: false, text: '' },
+            { selected: false, text: '' },
+            { selected: false, text: '' }
+          ],
+        },
+      ],
         }
     },
     methods: {
-    logout() {
-      // 清除用户认证状态（这里示例清除本地存储中的令牌）
-      localStorage.removeItem("userToken");
+        logout() {
+            // 清除用户认证状态（这里示例清除本地存储中的令牌）
+            localStorage.removeItem("userToken");
 
-      // 导航到登出页面或首页
-      this.$router.push("/askDetail"); // 或者使用首页路径
-    },
-    ShowWriteDai() {
+            // 导航到登出页面或首页
+            this.$router.push("/askDetail"); // 或者使用首页路径
+        },
+        ShowWriteDai() {
             this.showDia = true;
         },
 
         CloseWriteDai() {
             this.showDia = false;
         },
-        addContent() {
-                   
-                },
-                addQuestionForm() {
-                    if (this.questionForms.length < 10) {
-                        this.questionForms.push({
-                            question: "",
-                            answer: ""
-                        });
-                    }
-                },
-                removeQuestionForm(index) {
-                    this.questionForms.splice(index, 1);
-                },
-            
-  },
-  components:{
-    askDetail
-  }
-    }
 
+        addQuestionForm() {
+            if (this.questionForms.length < 10) {
+                this.questionForms.push({
+                    question: "",
+                    answer: ""
+                });
+            }
+        },
+        removeQuestionForm(index) {
+            this.questionForms.splice(index, 1);
+        },
+        ChangePage() {
+            this.page = 2
+        },
+        BackPage() {
+            this.page = 1
+        },
+        addQuestion() {
+      if (this.questions.length < 10) {
+        this.questions.push({
+          text: '',
+          answers: [
+            { selected: false, text: '' },
+            { selected: false, text: '' },
+            { selected: false, text: '' },
+            { selected: false, text: '' }
+          ],
+        });
+      }
+    },
+    removeQuestion(qIndex) {
+      this.questions.splice(qIndex, 1);
+    },
+    addAnswer(qIndex) {
+      if (this.questions[qIndex].answers.length < 4) {
+        this.questions[qIndex].answers.push({ selected: false, text: '' });
+      }
+    },
+    removeAnswer(qIndex, aIndex) {
+      this.questions[qIndex].answers.splice(aIndex, 1);
+    },
+
+ 
+  },
+  
 
     
+    components: {
+        askDetail,
+        child2,
+    }
+}
+
+
+
 
 </script>
 <template>
- 
-<askDetail/>
+    <askDetail />
 
-<div class="icon">
-    <button @:click="ShowMainDai" > <i class="fa-solid fa-trash fs-2"></i></button>
-<button @:click="ShowWriteDai" > <i class="fa-solid fa-plus fs-2 " ></i></button>
-</div>
-<div class="ShowWriteDai" v-if="showDia">
-   
-    <div class="dialog1">
-        <div class="tyty">
-         <button @:click="CloseWriteDai" >X</button>
-        </div>
-        <h1>新增問卷</h1>
-        <br>
-        <div class="dispalyset">
-         <h3>問卷名稱 :</h3>
-      
-          <input type="text" placeholder="請輸入問卷名稱" class="asktexttitle">
-   
-       </div>
-       <br>
-        <div class="dialog1first">
-       
-        <h3>開始時間</h3>
-        <input type="date" name="bday" />
-            
-        <h3>結束時間</h3>
-        <input type="date" name="bday" />
-        <div class="dialog1firstbutton">
-            <button @click="removeQuestionForm(index)">删除</button>
-        <button @click="addQuestionForm">新增問題</button>
-        </div>
-        
-        </div>
-        <div class="dialog1content" v-for="(form, index) in questionForms" :key="index">
-            <div class="asktitle">
-                <h3>問題{{ index + 1 }}</h3>            <input type="text" style="width: 500px;" placeholder="請輸入問題">
-            <select id="select" v-model="selectedOption" @change="addContent">
-                <option value="">請選擇</option>
-                <option v-for="option in options" :value="option">{{ option }}</option>
-            <option value="textarea">問答題</option>
-        </select>
-        </div>
-        <div class="askcont">
-            <div v-if="selectedOption">
-            <div>
-                <input type="radio"  id="radioOption1" name="radioGroup" value="Option 1">
-                <input type="text" style="width: 500px;" placeholder="請輸入回答">
+    <div class="icon">
+        <button @:click="ShowMainDai"> <i class="fa-solid fa-trash fs-2"></i></button>
+        <button @:click="ShowWriteDai"> <i class="fa-solid fa-plus fs-2 "></i></button>
+    </div>
+    <div class="ShowWriteDai" v-if="showDia">
+
+        <div class="dialog1">
+            <div class="tyty">
+                <button @:click="CloseWriteDai">X</button>
             </div>
-            <div>
-                <input type="radio" id="radioOption2" name="radioGroup" value="Option 2">
-                <input type="text" style="width: 500px;" placeholder="請輸入回答">
+            <h1>新增問卷</h1>
+            <br>
+            <div class="dispalyset">
+                <h3>問卷名稱 :</h3>
+
+                <input type="text" placeholder="請輸入問卷名稱" class="askheadtitle" v-model="keyinfo.askTitle">
+
             </div>
-            <div>
-                <input type="radio" id="radioOption2" name="radioGroup" value="Option 2">
-                <input type="text" style="width: 500px;" placeholder="請輸入回答">
+            <br>
+            <div class="dialog1first">
+
+                <h3>開始時間 :</h3>
+                <input type="date" name="bday" v-model="keyinfo.starttime" />
+                <h3> / </h3>
+                <h3>結束時間 :</h3>
+                <input type="date" name="bday" v-model="keyinfo.endtime" />
+                <div class="dialog1firstbutton">
+                    <button @click="removeQuestionForm(index)">删除</button>
+                    <button @click="addQuestionForm">新增問題</button>
+                </div>
+
             </div>
-            <div>
-                <input type="radio" id="radioOption2" name="radioGroup" value="Option 2">
-                <input type="text" style="width: 500px;" placeholder="請輸入回答">
-            </div> 
+            <div class="dialog1content" v-for="(form, index) in questionForms" :key="index">
+                <div>
+  
+    <div v-for="(question, qIndex) in questions" :key="qIndex">
+      <h2>問題 {{ qIndex + 1 }}</h2>
+      <input type="text" v-model="question.text" :placeholder="'请输入问题 ' + (qIndex + 1)">
+      <div v-for="(answer, aIndex) in question.answers" :key="aIndex">
+        <div>
+          <input type="radio" :id="'radioOption' + (aIndex + 1)" :name="'radioGroup' + (qIndex + 1)" :value="'Option ' + (aIndex + 1)" v-model="answer.selected">
+          <label :for="'radioOption' + (aIndex + 1)">{{ '' + (aIndex + 1) }}</label>
+          <input type="text" v-model="answer.text" :placeholder="'请输入答案 ' + (aIndex + 1)">
+          <button @click="removeAnswer(qIndex, aIndex)">删除回答</button>
         </div>
+      </div>
+      <button @click="addAnswer(qIndex)" v-if="question.answers.length < 4">新增回答</button>
+    </div>
+  </div>
+            </div>
+            <br>
+
+            <button type="button" @click="ChangePage()" class="continuebutton">確認填寫範圍</button>
+            <br>
+            <hr>
+            <div v-if="page == 2" class="show2">
+
+                <child2 :checkinfo="keyinfo" />
+                <button style="width: 100px; height: 50px; margin-left: 44vw;" type="button" @click="BackPage()">取消</button>
+
+            </div>
         </div>
-        </div>
-        <br>
-       
-        <button type="button" @click="ChangePage()" class="continuebutton">確認註冊資訊</button>
 
     </div>
- 
-</div>
 </template>
 <style lang="scss" scoped>
- 
-.ShowWriteDai{
+.ShowWriteDai {
     position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+
+    z-index: 999;
+
+    .dialog1 {
+        width: 60vw;
+        height: 80vh;
+        background: white;
+        color: #000000;
+        text-align: left;
+        padding: 50px 100px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        flex-direction: column;
+        overflow: auto;
+        border: 0px solid rgb(0, 0, 0);
+        
+
+        .dispalyset {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.5);
-            
-            z-index: 999;
-            .dialog1 {
-            width: 60vw;
-            height: 80vh;
-            background: white;
-            color: #000000;
-            text-align: left;
-            padding: 50px 100px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-            flex-direction: column;
-            overflow: auto;
-            .dispalyset{
-                display: flex;
-                border: 0px solid rgb(0, 0, 0);
-                width: 50vw;
-                .asktexttitle{
-                    font-size: 18pt;
-                    width: 40vw;
-                }
-               
+            border: 0px solid rgb(0, 0, 0);
+            width: 50vw;
+
+            .askheadtitle {
+                font-size: 18pt;
+                width: 40vw;
             }
 
-            .dialog1first{
-                display: flex;
-                border: 0px solid rgb(0, 0, 0);
+        }
 
-                .dialog1firstbutton{
-                    position: relative;
-                    left: 10vw;
-                }
-             
-            }
-            .dialog1content{
-                border: 0px solid rgb(0, 0, 0);
-                height: 30vh;
-                
-                .asktitle{
-                    display: flex;
-                    
-                }
-                .askcont{
-                    display: flex;
-                    border: 1px solid rgb(0, 0, 0);
-                    height: 25vh;
+        .dialog1first {
+            display: flex;
+            border: 0px solid rgb(0, 0, 0);
 
-                }
-            }
-            .tyty{
+            .dialog1firstbutton {
                 position: relative;
-                font-size: 25pt;
-                left: 105%;
-                bottom: 5%;
+                left: 10vw;
             }
-            
+
         }
-        .continuebutton{
+
+        .dialog1content {
+            border: 0px solid rgb(0, 0, 0);
+            height: 30vh;
+
+            .asktitle {
+                display: flex;
+
+            }
+
+            .askcont {
+                display: flex;
+                border: 1px solid rgb(0, 0, 0);
+                height: 25vh;
+
+            }
+        }
+
+        .tyty {
             position: relative;
-            left: 85%;
+            font-size: 25pt;
+            left: 105%;
+            bottom: 5%;
         }
+
+    }
+
+    .continuebutton {
+        position: relative;
+        left: 85%;
+    }
 }
-.icon{
+
+.icon {
     position: relative;
     bottom: 85%;
     left: 80%;
@@ -209,5 +266,4 @@ export default{
     display: flex;
     font-size: 18pt;
 }
-
 </style>
