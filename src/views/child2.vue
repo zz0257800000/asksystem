@@ -52,7 +52,7 @@ export default {
 
 <style>
 .body {
-    width: 100vw;
+    width: 60vw;
     display: flex;
     justify-content: center;
    
@@ -62,10 +62,10 @@ export default {
         border: 1px solid black;
         overflow: auto;
         background-color: #e7e7e7;
-        right: 26%;
-        bottom: 0%;
-        z-index: 999;
         position: relative;
+        right: 10%;
+    
+        
        
        
         .outsm{

@@ -136,16 +136,17 @@ export default {
                 <h3>結束時間 :</h3>
                 <input type="date" name="bday" v-model="keyinfo.endtime" />
                 <div class="dialog1firstbutton">
-                    <button @click="removeQuestionForm(index)">删除</button>
-                    <button @click="addQuestionForm">新增問題</button>
+   
                 </div>
 
             </div>
             <div class="dialog1content" v-for="(form, index) in questionForms" :key="index">
-                <div>
-  
+                <div><button @click="addQuestion" v-if="questions.length < 10">新增问题</button>
+     <button @click="removeQuestion(qIndex)">删除问题</button>
     <div v-for="(question, qIndex) in questions" :key="qIndex">
-      <h2>問題 {{ qIndex + 1 }}</h2>
+      <span>問題 {{ qIndex + 1 }}</span>
+      
+
       <input type="text" v-model="question.text" :placeholder="'请输入问题 ' + (qIndex + 1)">
       <div v-for="(answer, aIndex) in question.answers" :key="aIndex">
         <div>
@@ -158,6 +159,7 @@ export default {
       <button @click="addAnswer(qIndex)" v-if="question.answers.length < 4">新增回答</button>
     </div>
   </div>
+
             </div>
             <br>
 
@@ -165,9 +167,9 @@ export default {
             <br>
             <hr>
             <div v-if="page == 2" class="show2">
+                <button style="width: 100px; height: 50px; margin-left: 44vw;" type="button" @click="BackPage()">取消回上頁</button>
 
                 <child2 :checkinfo="keyinfo" />
-                <button style="width: 100px; height: 50px; margin-left: 44vw;" type="button" @click="BackPage()">取消</button>
 
             </div>
         </div>
@@ -196,9 +198,9 @@ export default {
         text-align: left;
         padding: 50px 100px;
         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-        flex-direction: column;
+        border: 1px solid rgb(0, 0, 0);
         overflow: auto;
-        border: 0px solid rgb(0, 0, 0);
+
         
 
         .dispalyset {
@@ -227,7 +229,7 @@ export default {
         .dialog1content {
             border: 0px solid rgb(0, 0, 0);
             height: 30vh;
-
+            overflow: auto;
             .asktitle {
                 display: flex;
 
@@ -246,6 +248,9 @@ export default {
             font-size: 25pt;
             left: 105%;
             bottom: 5%;
+            border: 0px solid rgb(0, 0, 0);
+            width: 3vw;
+
         }
 
     }
