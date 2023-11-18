@@ -64,7 +64,7 @@ export default {
         background-color: #e7e7e7;
         position: relative;
         right: 10%;
-    
+        z-index: 2;
         
        
        

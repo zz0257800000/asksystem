@@ -12,25 +12,24 @@ export default {
             textarea: "",
             keyinfo: {
                 askTitle: "",
-
                 starttime: "",
                 endtime: "",
                 asktexttitle: "",
                 answer: "",
 
             },
+            questArrLocal: JSON.parse(localStorage.getItem("questArrLocal")) || [],
+            questionName: '',
+            description: '',
+            startTime: '',
+            endTime: '',
+
+            questArr: [],
+            
+            selectedQuestionType: "radio",
+            questionTypes: ["radio", "checkbox", "text"],
             page: 1,
-             questions: [
-        {
-          text: '',
-          answers: [
-            { selected: false, text: '' },
-            { selected: false, text: '' },
-            { selected: false, text: '' },
-            { selected: false, text: '' }
-          ],
-        },
-      ],
+             
         }
     },
     methods: {
@@ -48,49 +47,64 @@ export default {
         CloseWriteDai() {
             this.showDia = false;
         },
-
-        addQuestionForm() {
-            if (this.questionForms.length < 10) {
-                this.questionForms.push({
-                    question: "",
-                    answer: ""
-                });
-            }
-        },
-        removeQuestionForm(index) {
-            this.questionForms.splice(index, 1);
-        },
+        
         ChangePage() {
             this.page = 2
         },
         BackPage() {
             this.page = 1
         },
-        addQuestion() {
-      if (this.questions.length < 10) {
-        this.questions.push({
-          text: '',
-          answers: [
-            { selected: false, text: '' },
-            { selected: false, text: '' },
-            { selected: false, text: '' },
-            { selected: false, text: '' }
-          ],
-        });
-      }
-    },
-    removeQuestion(qIndex) {
-      this.questions.splice(qIndex, 1);
-    },
-    addAnswer(qIndex) {
-      if (this.questions[qIndex].answers.length < 4) {
-        this.questions[qIndex].answers.push({ selected: false, text: '' });
-      }
-    },
-    removeAnswer(qIndex, aIndex) {
-      this.questions[qIndex].answers.splice(aIndex, 1);
-    },
+      
+    createNewQuest() {
+    if (this.questArr.length < 10) {
+        const newQuestion = {
+            questionType: 'radio',
+            question: [],
+            options: [],
+        };
+        this.questArr.push(newQuestion);
+    } else {
+        alert("問卷中的問題數量不能超過10個。");
+    }
+},
+createNewOptions(questionIndex) {
+    const maxOptions = 4;
+    if (this.questArr[questionIndex].options.length < maxOptions) {
+        const newOption = {
+            text: '',
+        };
+        this.questArr[questionIndex].options.push(newOption);
+    } else {
+        alert("每個問題的選項數量不能超過4個。");
+    }
+},
 
+        deleteNewQuest(questionIndex) {
+
+            if (this.questArr.length > 1) {
+                this.questArr.splice(questionIndex, 1);
+            } else {
+                alert("至少需要保留一個問題。");
+            }
+        },
+        deleteNewOptions(questionIndex, optionIndex) {
+            this.questArr[questionIndex].options.splice(optionIndex, 1);
+        },
+
+        saveNewQuestPages() {
+            const newQuestionnaire = {
+                questionName: this.questionName,
+                description: this.description,
+                startTime: this.startTime,
+                endTime: this.endTime,
+                questions: this.questArr,
+                userResponse: []   //新增儲存回答區域
+            };
+            this.questArrLocal.push(newQuestionnaire);
+            localStorage.setItem("questArrLocal", JSON.stringify(this.questArrLocal));
+            alert("已經成功儲存問卷")
+        }
+    
  
   },
   
@@ -135,32 +149,38 @@ export default {
                 <h3> / </h3>
                 <h3>結束時間 :</h3>
                 <input type="date" name="bday" v-model="keyinfo.endtime" />
+                
+                <button v-on:click="createNewQuest()">新增問題</button>
+
                 <div class="dialog1firstbutton">
    
                 </div>
 
             </div>
-            <div class="dialog1content" v-for="(form, index) in questionForms" :key="index">
-                <div><button @click="addQuestion" v-if="questions.length < 10">新增问题</button>
-     <button @click="removeQuestion(qIndex)">删除问题</button>
-    <div v-for="(question, qIndex) in questions" :key="qIndex">
-      <span>問題 {{ qIndex + 1 }}</span>
-      
+            <div class="createQuest" v-for="(quest, questionIndex) in questArr" :key="questionIndex">
+            <!-- 第一個Vfor做出每一個題目 -->
+            <label>第{{ questionIndex + 1 }}題</label>
+            <select v-model="quest.questionType">
+                <option v-for="(type, index) in questionTypes" :key="index" :value="type">{{ type === 'radio' ? '單選' : type
+                    === 'checkbox' ? '複選' : '簡答' }}</option>
+            </select>
+            <input type="text" v-model="quest.question" placeholder="輸入題目">
+            <button @click="createNewOptions(questionIndex)">新增選項</button>
 
-      <input type="text" v-model="question.text" :placeholder="'请输入问题 ' + (qIndex + 1)">
-      <div v-for="(answer, aIndex) in question.answers" :key="aIndex">
-        <div>
-          <input type="radio" :id="'radioOption' + (aIndex + 1)" :name="'radioGroup' + (qIndex + 1)" :value="'Option ' + (aIndex + 1)" v-model="answer.selected">
-          <label :for="'radioOption' + (aIndex + 1)">{{ '' + (aIndex + 1) }}</label>
-          <input type="text" v-model="answer.text" :placeholder="'请输入答案 ' + (aIndex + 1)">
-          <button @click="removeAnswer(qIndex, aIndex)">删除回答</button>
-        </div>
-      </div>
-      <button @click="addAnswer(qIndex)" v-if="question.answers.length < 4">新增回答</button>
-    </div>
-  </div>
-
+            <!-- selected是在input標籤在選擇radio或checkbox時，才會新增selected屬性在該選項上面 
+            單選為on 複選為true-->
+            <div class="NewOptions" v-for="(option, optionIndex) in quest.options" :key="optionIndex">
+                <input v-if="quest.questionType === 'radio'" type="radio" name="radioGroup"
+                    v-model="quest.options[optionIndex].selected">
+                <input v-if="quest.questionType === 'checkbox'" type="checkbox"
+                    v-model="quest.options[optionIndex].selected">
+                <input type="text" placeholder="輸入選項" v-model="quest.options[optionIndex].text">
+                <button style="background-color: rgb(175, 175, 175);" @click="deleteNewOptions(questionIndex, optionIndex)">刪除選項</button>
             </div>
+
+            <button style="margin-left: 43px; background-color: rgb(175, 175, 175);"
+                v-on:click="deleteNewQuest(questionIndex)">刪除問題</button>
+        </div>
             <br>
 
             <button type="button" @click="ChangePage()" class="continuebutton">確認填寫範圍</button>
@@ -173,7 +193,7 @@ export default {
 
             </div>
         </div>
-
+        
     </div>
 </template>
 <style lang="scss" scoped>
@@ -227,9 +247,9 @@ export default {
         }
 
         .dialog1content {
-            border: 0px solid rgb(0, 0, 0);
+            border: 1px solid rgb(0, 0, 0);
             height: 30vh;
-            overflow: auto;
+
             .asktitle {
                 display: flex;
 
@@ -252,7 +272,41 @@ export default {
             width: 3vw;
 
         }
+        .createQuest {
+        margin-top: 15px;
+        width: 900px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 20px;
+        background-color: #fff;
 
+        label {
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            margin-top: 15px;
+            margin-bottom: 15px;
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 15px;
+        }
+
+        input[type="radio"] {
+            margin-right: 29px;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    }
     }
 
     .continuebutton {
@@ -271,4 +325,5 @@ export default {
     display: flex;
     font-size: 18pt;
 }
+
 </style>

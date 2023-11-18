@@ -105,6 +105,7 @@ RouterLink
 <h1>|</h1>
 
 <h1>結束時間</h1>
+
 </div>
 <div class="detail">
   <h1>觀看統計</h1>
