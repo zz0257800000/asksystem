@@ -22,16 +22,8 @@ const router = createRouter({
       name: 'Vfor',
       component: () => import('../views/Vfor.vue')
     },
-    {
-      path: '/HomeWork',
-      name: 'HomeWork',
-      component: () => import('../views/HomeWork.vue')
-    },
-    {
-      path: '/child2',
-      name: 'child2',
-      component: () => import('../views/child2.vue')
-    }, 
+    
+   
     
     
     {

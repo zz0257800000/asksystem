@@ -1,6 +1,5 @@
 <script>
 import askDetail from "./../components/askDetail.vue"
-import child2 from './child2.vue';
 
 export default {
     data() {
@@ -23,11 +22,11 @@ export default {
             description: '',
             startTime: '',
             endTime: '',
-
             questArr: [],
-            
             selectedQuestionType: "radio",
             questionTypes: ["radio", "checkbox", "text"],
+
+
             page: 1,
              
         }
@@ -91,19 +90,7 @@ createNewOptions(questionIndex) {
             this.questArr[questionIndex].options.splice(optionIndex, 1);
         },
 
-        saveNewQuestPages() {
-            const newQuestionnaire = {
-                questionName: this.questionName,
-                description: this.description,
-                startTime: this.startTime,
-                endTime: this.endTime,
-                questions: this.questArr,
-                userResponse: []   //新增儲存回答區域
-            };
-            this.questArrLocal.push(newQuestionnaire);
-            localStorage.setItem("questArrLocal", JSON.stringify(this.questArrLocal));
-            alert("已經成功儲存問卷")
-        }
+      
     
  
   },
@@ -112,7 +99,7 @@ createNewOptions(questionIndex) {
     
     components: {
         askDetail,
-        child2,
+  
     }
 }
 
@@ -174,7 +161,7 @@ createNewOptions(questionIndex) {
                     v-model="quest.options[optionIndex].selected">
                 <input v-if="quest.questionType === 'checkbox'" type="checkbox"
                     v-model="quest.options[optionIndex].selected">
-                <input type="text" placeholder="輸入選項" v-model="quest.options[optionIndex].text">
+                    <input type="text" placeholder="輸入選項" v-model="quest.options[optionIndex].text">
                 <button style="background-color: rgb(175, 175, 175);" @click="deleteNewOptions(questionIndex, optionIndex)">刪除選項</button>
             </div>
 
