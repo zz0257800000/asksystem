@@ -36,6 +36,16 @@ const router = createRouter({
       name: 'signUp',
       component: () => import('../views/askAllPage/signUp.vue')
     }, 
+    {
+      path: '/signUp',
+      name: 'signUp',
+      component: () => import('../views/askAllPage/signUp.vue')
+    }, 
+    {
+      path: "/askAllPage/doQuestPage/:questionnaireId",
+      name: "askAllPage/doQuestPage",
+      component: () => import('../views/askAllPage/doQuestPage.vue'),
+    },
    
    
     

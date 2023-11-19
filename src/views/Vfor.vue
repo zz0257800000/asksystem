@@ -9,14 +9,10 @@ export default {
             options: ["選擇題",],
             questionForms: [],
             textarea: "",
-            keyinfo: {
-                askTitle: "",
-                starttime: "",
-                endtime: "",
-                asktexttitle: "",
-                answer: "",
 
-            },
+         
+
+
             questArrLocal: JSON.parse(localStorage.getItem("questArrLocal")) || [],
             questionName: '',
             description: '',
@@ -89,6 +85,23 @@ createNewOptions(questionIndex) {
         deleteNewOptions(questionIndex, optionIndex) {
             this.questArr[questionIndex].options.splice(optionIndex, 1);
         },
+        saveNewQuestPages() {
+            const newQuestionnaire = {
+                questionName: this.questionName,
+                description: this.description,
+                startTime: this.startTime,
+                endTime: this.endTime,
+                questions: this.questArr,
+                userResponse: []   //新增儲存回答區域
+            };
+            this.questArrLocal.push(newQuestionnaire);
+            localStorage.setItem("questArrLocal", JSON.stringify(this.questArrLocal));
+            alert("已經成功儲存問卷");
+            this.showDia = false;
+
+        },
+        
+      
 
       
     
@@ -111,8 +124,7 @@ createNewOptions(questionIndex) {
     <askDetail />
 
     <div class="icon">
-        <button @:click="ShowMainDai"> <i class="fa-solid fa-trash fs-2"></i></button>
-        <button @:click="ShowWriteDai"> <i class="fa-solid fa-plus fs-2 "></i></button>
+     
     </div>
     <div class="ShowWriteDai" v-if="showDia">
 
@@ -125,17 +137,17 @@ createNewOptions(questionIndex) {
             <div class="dispalyset">
                 <h3>問卷名稱 :</h3>
 
-                <input type="text" placeholder="請輸入問卷名稱" class="askheadtitle" v-model="keyinfo.askTitle">
+                <input type="text" placeholder="請輸入問卷名稱" class="askheadtitle" v-model="this.questionName">
 
             </div>
             <br>
             <div class="dialog1first">
 
                 <h3>開始時間 :</h3>
-                <input type="date" name="bday" v-model="keyinfo.starttime" />
+                <input type="date" name="bday" v-model="this.startTime" />
                 <h3> / </h3>
                 <h3>結束時間 :</h3>
-                <input type="date" name="bday" v-model="keyinfo.endtime" />
+                <input type="date" name="bday" v-model="this.endTime" />
                 
                 <button v-on:click="createNewQuest()">新增問題</button>
 
@@ -170,15 +182,11 @@ createNewOptions(questionIndex) {
         </div>
             <br>
 
-            <button type="button" @click="ChangePage()" class="continuebutton">確認填寫範圍</button>
+            <button class="continuebutton" v-on:click="saveNewQuestPages()">儲存本次問卷</button>
+
             <br>
             <hr>
-            <div v-if="page == 2" class="show2">
-                <button style="width: 100px; height: 50px; margin-left: 44vw;" type="button" @click="BackPage()">取消回上頁</button>
-
-                <child2 :checkinfo="keyinfo" />
-
-            </div>
+           
         </div>
         
     </div>

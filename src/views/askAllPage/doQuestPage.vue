@@ -1,6 +1,6 @@
 
 <script>
-import previewdoQuestPage from '../quest/previewDoQuestPage.vue';
+import previewdoQuestPage from './previewDoQuestPage.vue';
 export default {
     data() {
         return {
