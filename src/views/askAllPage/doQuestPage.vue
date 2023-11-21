@@ -78,7 +78,6 @@ export default {
         <div class="doQuestHeader">
             <h2>問卷名稱:{{ questArrLocal[a].questionName }}</h2>
             <h6>開始時間:{{ questArrLocal[a].startTime }}~結束時間:{{ questArrLocal[a].endTime }}</h6>
-            <h4>問題描述:{{ questArrLocal[a].description }}</h4>
         </div>
 
 
@@ -105,7 +104,7 @@ export default {
             <div class="fluidQuest">
                 <div v-for="(question, questionIndex) in questArrLocal[a].questions" :key="questionIndex">
                     <label>問題 {{ questionIndex + 1 }}: {{ question.question }}</label>
-                    <div v-if="question.questionType === 'radio'">
+                    <div v-if="question.questionType === 'radio'" class="questionAnswer" >
                         <div v-for="(option, optionIndex) in question.options" :key="optionIndex">
                             <input type="radio" :name="'q_' + questionIndex" :value="option.text" v-model="option.answers">
                             <label :for="'q_' + questionIndex + '_o_' + optionIndex">{{ option.text }}</label>
@@ -129,11 +128,14 @@ export default {
 
                 </div>
                 <button v-on:click="goToPreviewPage()">預覽填寫結果</button>
+                              <RouterLink  class="backbtn" to="/askDetail">返回首頁</RouterLink>
+
+
             </div>
         </div>
         <div class="showPreviewPage" v-if="this.page == 2">
             <previewdoQuestPage :checkinfo="doquestArr" />
-            <button type="button" @click="backToQuestPage()">返回修改</button>
+            <button type="button" class="backbtn" @click="backToQuestPage()">返回修改</button>
         </div>
     </div>
 </template>
@@ -143,11 +145,12 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #f0f0f0;
+    background-color: gray;
+
 
     .doQuestHeader {
         width: 900px;
-        border: 1px solid #ccc;
+        border: 1px solid #000000;
         padding: 10px;
         border-radius: 10px;
         margin-bottom: 20px;
@@ -157,12 +160,12 @@ export default {
     .fixedQuest {
         width: 900px;
         height: auto;
-        border: 1px solid #ccc;
+        border: 1px solid #000000;
         border-radius: 10px;
         padding: 10px;
         margin-bottom: 20px;
         background-color: #fff;
-
+        font-size: 18pt;
         div {
             display: flex;
             align-items: center;
@@ -181,12 +184,31 @@ export default {
 
     .fluidQuest {
         width: 900px;
-        border: 1px solid #ccc;
+        border: 1px solid #000000;
         border-radius: 10px;
         padding: 20px;
         margin-top: 20px;
-        background-color: #fff;
+        background-color: rgb(251, 251, 251);
+        font-size: 20pt;
+       
+    display: flex;
+    flex-direction: column; /* 將子元素的排列方向設置為垂直（從上到下） */
+    align-items: flex-start; /* 將子元素在水平方向上對齊到左邊 */
+    .questionAnswer{
+        display: flex;
+    align-items: flex-start; /* 將子元素在垂直方向上對齊到上方 */
+    flex-direction: column;
+
     }
+    .backbtn{
+        position: relative;
+        left: 85%;
+        
+        &:hover{
+            background-color: gray;
+        }
+    }
+ }
 
     label {
         font-weight: bold;
@@ -194,6 +216,13 @@ export default {
 
     input[type="radio"] {
         margin-right: 10px;
+    }
+    .showPreviewPage{
+        border: 0px solid black;
+
+        .backbtn{
+            font-size: 20pt;
+        }
     }
 }
 </style>

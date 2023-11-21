@@ -43,6 +43,8 @@ export default {
                 this.questArrLocal[this.a].userResponse.push(userResponse);
                 localStorage.setItem("questArrLocal", JSON.stringify(this.questArrLocal));
                 alert("已填寫問卷");
+                return this.$router.push({ name: 'askDetail' });
+
         },
     },
 };
@@ -51,10 +53,10 @@ export default {
 <template>
     <div class="personalDetail">
         <h1>本次填寫問卷確認頁面</h1>
-        <p>姓名{{ checkinfo.userName }}</p>
-        <p>手機{{ checkinfo.userPhone }}</p>
-        <p>Email{{ checkinfo.userEmail }}</p>
-        <p>年齡{{ checkinfo.userAge }}</p>
+        <p>姓名 :{{ checkinfo.userName }}</p>
+        <p>手機 :{{ checkinfo.userPhone }}</p>
+        <p>Email :{{ checkinfo.userEmail }}</p>
+        <p>年齡 :{{ checkinfo.userAge }}</p>
 
     </div>
     <div class="previewArea">
@@ -69,12 +71,17 @@ export default {
 <style lang="scss" scoped>
 .personalDetail {
     width: 900px;
-    height: auto;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 10px;
-    margin-bottom: 20px;
-    background-color: #fff;
+        border: 1px solid #000000;
+        border-radius: 10px;
+        padding: 20px;
+       
+        background-color: rgb(255, 255, 255);
+        font-size: 18pt;
+        font-weight: bold;
+
+    display: flex;
+    flex-direction: column; /* 將子元素的排列方向設置為垂直（從上到下） */
+    align-items: flex-start; /* 將子元素在水平方向上對齊到左邊 */
 
     div {
         display: flex;
@@ -94,10 +101,16 @@ export default {
 
 .previewArea {
     width: 900px;
-    border: 1px solid #ccc;
+    border: 1px solid #000000;
     border-radius: 10px;
     padding: 20px;
     margin-top: 20px;
-    background-color: #fff;
+    background-color: #ffffff;
+    display: flex;
+    align-items: flex-start; /* 將子元素在垂直方向上對齊到上方 */
+    flex-direction: column;            
+    font-weight: bold;
+    font-size: 20pt;
+
 }
 </style>
