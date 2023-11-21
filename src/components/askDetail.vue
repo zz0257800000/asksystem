@@ -23,6 +23,10 @@ export default {
     }
   },
   methods: {
+    editQuestionnaire(index) {
+      // 導航到一個頁面，用戶可以在該頁面上編輯問卷內容
+      this.$router.push(`/editQuestionnairePage/${index}`);
+    },
     ShowDialog() {
       this.showDialog = true;
     },
@@ -198,12 +202,13 @@ createNewOptions(questionIndex) {
               <th>開始時間</th>
               <th>結束時間</th>
               <th>觀看統計</th>
+              <th>更改</th>
             </tr>
           </thead>
           <tbody>
         <tr v-for="(quest, index) in questArrLocal" :key="index">
           <td>
-            <input type="checkbox" v-model="selectedQuests" :value="index">
+            <input type="checkbox" v-model="selectedQuests" :value="index" class="checkboxsize" >
           </td>
           <td>{{ index + 1 }}</td>
           <td>  <router-link :to="'/askAllPage/doQuestPage/' + index">{{ quest.questionName }}</router-link></td>
@@ -211,6 +216,7 @@ createNewOptions(questionIndex) {
           <td>{{ quest.startTime }}</td>
           <td>{{ quest.endTime }}</td>
           <td>觀看統計</td>
+          <td><i class="fa-solid fa-pencil" @click="editQuestionnaire(index)"></i></td>
         </tr>
       </tbody>
         </table>
@@ -399,7 +405,11 @@ createNewOptions(questionIndex) {
       /* 添加滚动条，以防表格内容过长 */
       background-color: #e9e9e9;
       /* 设置白色背景 */
+      .checkboxsize{
+        width: 20px; /* 可以根據需要調整寬度 */
+    height: 20px; /* 可以根據需要調整高度 */     
 
+   }
       table {
         width: 100%;
         border-collapse: collapse;

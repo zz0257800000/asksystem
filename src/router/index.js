@@ -46,6 +46,11 @@ const router = createRouter({
       name: "askAllPage/doQuestPage",
       component: () => import('../views/askAllPage/doQuestPage.vue'),
     },
+    {
+      path: "/askAllPage/editQuestionnairePage/:index",
+      name: "askAllPage/editQuestionnairePage",
+      component: () => import('../views/askAllPage/editQuestionnairePage.vue'),
+    },
    
    
     
