@@ -8,17 +8,24 @@ export default {
       startDate:'',
       endDate:'',
       showDialog: false,
-    
-      loginFailed: false,
       selectedQuests: [], // 存储选中的问卷的索引数组
-
-     
       questArr: [],
       selectedQuestionType: "radio",
       questionTypes: ["radio", "checkbox", "text"],
+      today: ''      // 存放今天的日期
     }
+  },mounted() {
+    this.setToday(); // 设置今天的日期作为最小日期
   },
   methods: {
+    setToday() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = today.getMonth() + 1;  // 月份是从 0 开始的，所以加 1
+      const day = today.getDate();
+      this.today = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+      this.startDate = this.today; // 设置初始值为今天
+    },
     editQuestionnaire(index) {
       // 導航到一個頁面，用戶可以在該頁面上編輯問卷內容
       this.$router.push(`/editQuestionnairePage/${index}`);
@@ -31,14 +38,6 @@ export default {
     CloseWriteDai() {
       this.showDia = false;
     },
-
-    ChangePage() {
-      this.page = 2
-    },
-    BackPage() {
-      this.page = 1
-    },
-
     createNewQuest() {
       if (this.questArr.length < 10) {
         const newQuestion = {
@@ -94,9 +93,6 @@ export default {
       this.questArr = [];  // 如果需要重置问题数组的内容，你可以根据实际情况添加或删除此行
 
     },
-    
-
-      
      deleteSelectedQuests() {
       // 根据选中的索引删除相应的问卷
       this.selectedQuests.sort((a, b) => b - a); // 降序排列以免索引错位
@@ -105,7 +101,6 @@ export default {
         this.questArrLocal.splice(index, 1);
       });
       localStorage.setItem("questArrLocal", JSON.stringify(this.questArrLocal));
-
       // 清空选中状态
       this.selectedQuests = [];
     },
@@ -165,18 +160,13 @@ export default {
       <h1><b>問卷調查局</b></h1>
       <div>
         <RouterLink class="btn" to="/signUp">註冊</RouterLink>
-
-
         <button class="btn" v-on:click="ShowDialog">登入</button>
-
       </div>
     </div>
     <div class="askMainPage">
       <div class="search">
         <input class="searchText" type="text" placeholder="請輸入搜尋內容……">
         <i class="fa-solid fa-magnifying-glass  "></i>
-
-
       </div>
       <br>
       <div class="daysearch">
@@ -189,7 +179,6 @@ export default {
         <button @click="deleteSelectedQuests"> <i class="fa-solid fa-trash fs-2"></i></button>
         <button @:click="ShowWriteDai"> <i class="fa-solid fa-plus fs-2 "></i></button>
       </div>
-
       <div class="showList">
         <table>
           <thead>
@@ -240,10 +229,10 @@ export default {
         <div class="dialog1first">
 
           <h3>開始時間 :</h3>
-          <input type="date" name="bday" v-model="this.startDate" />
+          <input type="date" name="bday" v-model="this.startDate" :min="today" />
           <h3> / </h3>
           <h3>結束時間 :</h3>
-          <input type="date" name="bday" v-model="this.endDate" />
+          <input type="date" name="bday" v-model="this.endDate" :min="today" />
 
           <button v-on:click="createNewQuest()">新增問題</button>
 
