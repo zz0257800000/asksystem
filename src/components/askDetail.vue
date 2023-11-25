@@ -8,18 +8,11 @@ export default {
       startDate:'',
       endDate:'',
       showDialog: false,
-
-      showDialog: false,
-      username: "",
-      password: "",
+    
       loginFailed: false,
       selectedQuests: [], // 存储选中的问卷的索引数组
 
-      questArrLocal: JSON.parse(localStorage.getItem("questArrLocal")) || [],
-      questionName: '',
-      description: '',
-      startTime: '',
-      endTime: '',
+     
       questArr: [],
       selectedQuestionType: "radio",
       questionTypes: ["radio", "checkbox", "text"],
@@ -135,20 +128,7 @@ export default {
           options:this.options
         }
         ],
-        // hwOptionList: [
-        //     {
-        //         optionText: "Red111"
-        //     },
-        //     {
-        //         optionText: "Blue111"
-        //     },
-        //     {
-        //         optionText: "Every day"
-        //     },
-        //     {
-        //         optionText: "Once a week"
-        //     }
-        // ]
+    
       };
       const requestBody = JSON.stringify(newQuestionnaire);
       fetch('http://localhost:8080/api/quiz/create', {
@@ -253,7 +233,7 @@ export default {
         <div class="dispalyset">
           <h3>問卷名稱 :</h3>
 
-          <input type="text" placeholder="請輸入問卷名稱" class="askheadtitle" v-model="this.questionName">
+          <input type="text" placeholder="請輸入問卷名稱" class="askheadtitle" v-model="this.title">
 
         </div>
         <br>
