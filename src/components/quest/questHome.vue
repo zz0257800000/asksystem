@@ -3,35 +3,58 @@ export default {
     data() {
         return {
             searchAllList: {
-                hwQuestionnaireList: [],
-                hwQuestionList: []
+                questionnaire: [],
+                questionList: []
             },
             searchText: '',
             searchStartTime: '',
             searchEndTime: '',
             currentPage: 1,// 初始化当前页数为1
-
-            quizVoList: [    ],
         };
     },
+    
     mounted() {
-        this.searchParam();
+        this.search();
+        
+        
     },
     computed: {
         totalPages() {
             const pageSize = 10; // 每页显示的数量
-            return Math.ceil(this.searchAllList.hwQuestionnaireList.length / pageSize);
+            return Math.ceil(this.searchAllList.questionnaire.length / pageSize);
         }
     },
 
     methods: {
-        
+        search() {
+            fetch('http://localhost:8080/api/search', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+                    this.searchAllList.questionnaire = data.quizVoList.map(item => item.questionnaire);
+                    this.searchAllList.questionList = data.quizVoList.map(item => item.questionList);
+
+                    console.log(this.searchAllList);
+                })
+
+                .catch(error => console.error('Error:', error));
+        },
         searchParam() {
             const title = this.searchText;
             const startDate = this.searchStartTime;
             const endDate = this.searchEndTime;
 
-            const url = new URL('http://localhost:8080/api/quiz/search');
+            const url = new URL('http://localhost:8080/api/quiz/searchParam');
             url.searchParams.append('question_name', title);
             url.searchParams.append('start_Time', startDate);
             url.searchParams.append('end_Time', endDate);
@@ -49,12 +72,10 @@ export default {
                     return response.json();
                 })
                 .then(data => {
-                    console.log(data.quizVoList);
-                    this.quizVoList= data.quizVoList;
-                    this.searchAllList.hwQuestionnaireList = data.hwQuestionnaireList;
-                    this.searchAllList.hwQuestionList = data.hwQuestionList;
-                    //
-                                        console.log(this.searchAllList);
+
+                    console.log(data);
+                    this.searchAllList.questionnaire = data.quizVoList.map(item => item.questionnaire);
+        this.searchAllList.questionList = data.quizVoList.map(item => item.questionList);
 
                 })
                 .catch(error => console.error('Error:', error));
@@ -63,8 +84,35 @@ export default {
             const pageSize = 10; // 每页显示的数量
             const startIndex = (pageNum - 1) * pageSize;
             const endIndex = startIndex + pageSize;
-            return this.searchAllList.hwQuestionnaireList.slice(startIndex, endIndex);
+            return this.searchAllList.questionnaire.slice(startIndex, endIndex);
+        },
+        deleteQuestionnaires() {
+    // 假設你有一個存儲問卷 id 的列表，例如 questionnaireIds
+    const url = 'http://localhost:8080/api/quiz/delete';
+
+    fetch(url, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(questionnaireIds)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
+        return response.json();
+    })
+    .then(data => {
+        // 處理刪除成功後的回應
+        console.log('Delete successful:', data);
+        // 更新前端狀態，例如重新加載問卷列表等
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // 處理錯誤，例如顯示錯誤信息給用戶
+    });
+}
 
     }
 };
@@ -74,39 +122,43 @@ export default {
     <div class="questHomeBody">
         <div class="searchList">
             <div class="searchListTop">
-                <h1><b>問卷調查局</b></h1>
-                <input class="searchText" type="text" placeholder="請輸入搜尋內容……"  v-model="searchText">
+                <label>問卷標題(列表頁)</label>
+                <button class="DeLeteButton" v-on:click="deleteQuestionnaires()">全部毀滅</button>
 
+                <input type="search" v-model="searchText">
             </div>
             <div class="searchListDown">
-                <h1>開始 / 結束</h1>                
+                <label for="">開始/結束</label>
                 <input class="searchStartTime" type="date" v-model="searchStartTime">
                 <input class="searchEndTime" type="date" v-model="searchEndTime">
                 <button class="searchButton" v-on:click="searchParam()">搜尋</button>
-                <button>        <RouterLink to="/questHome/createQuestPage">新增問卷</RouterLink></button>
+                <button><a href="/questHome/createQuestPage">新增問卷</a></button>
             </div>
         </div>
         <div class="showList">
             <table>
-                
-                <div>
-                    <!-- {{ quizVoList }} -->
-    <div class="resList" v-for="(data) in quizVoList" :key="data.questionnaire.id">
-      <span class="title">{{ data.questionnaire.title }}</span>
-      <span class="time">{{ data.questionnaire.startDate }} ~ {{ data.questionnaire.endDate }}</span>
-
-      <div class="iconBar">
-        <!-- 這裡的 RouterLink 需要改成 router-link -->
-        <router-link :to="'/view/' + data.questionnaire.id" title="查看問卷">
-          <i class="fa-regular fa-eye icon"></i>
-        </router-link>
-
-        <router-link :to="'/fill/' + data.questionnaire.id" title="填寫問卷">
-          <i class="fa-solid fa-pencil icon"></i>
-        </router-link>
-      </div>
-    </div>
-  </div>
+                <thead>
+                    <tr>
+                        <th>＃</th>
+                        <th>問卷(新的列表fromDB)
+                        </th>
+                        <th>狀態</th>
+                        <th>開始時間</th>
+                        <th>結束時間</th>
+                        <th>觀看統計</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(quest, index) in getPage(currentPage)" :key="index">
+                        <td>{{ index + 1 }}</td>
+                        <td><router-link :to="'/questHome/doQuestPage/'+quest.questionnaireId">{{ quest.title
+                        }}</router-link></td> 
+                        <td>狀態</td>
+                        <td>{{ quest.startDate }}</td>
+                        <td>{{ quest.endDate }}</td>
+                        <td><router-link :to="'/questHome/showDetailPage'">觀看統計</router-link></td>
+                    </tr>
+                </tbody>
             </table>
         </div>
         <div class="showPages">
@@ -122,7 +174,7 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #f0f0f0;
+    background-color: #bebebe;
     /* 设置背景颜色 */
 
     .searchList {
@@ -224,35 +276,5 @@ export default {
 
 
 
-}.resList {
-  width: 45vw;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border: 1px solid #1e5128;
-  border-radius: 8px;
-  padding: 0.2rem 0.5rem;
-  margin: 0.5rem 0;
-  box-shadow: 0px 8px 6px -6px #1e5128;
-
-  .title {
-    width: 30%;
-    font-size: 1.2rem;
-  }
-
-  .time {
-    width: 40%;
-    font-size: 1.2rem;
-  }
-
-  .iconBar {
-    width: 20%;
-    display: flex;
-    justify-content: space-around;
-    .icon {
-      font-size: 1.5rem;
-      color: #1e5128;
-    }
-  }
 }
 </style>
