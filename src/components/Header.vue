@@ -1,55 +1,37 @@
-<script >
-import {RouterLink,RouterView}from 'vue-router';
-import {mapState, mapActions}from 'pinia';
-import indexState from '../stores/indexState';
-export default{
-  components:{
-    RouterLink
-  },
-  computed:{
-    ...mapState(indexState,["location","locationInfo"])
-  },
-  methods:{
-    ...mapActions(indexState,["getLocation","setLocation"])
-    // change(){
-    //   this.setLocation(2)
-    //   this.getLocation()
-
-    // }
-  }
-}
+<script>
+import { RouterLink } from "vue-router";
+import { mapState, mapActions } from "pinia";
+import indexState from "../Store/indexState";
+export default {
+    components: {
+        RouterLink,
+    },
+    computed: {
+        ...mapState(indexState, ["location", "locationInfo"])
+    },
+    methods: {
+        ...mapActions(indexState, ["getLocation", "setLocation"])
+    }
+};
 </script>
-
 <template>
-    <nav class="topNav">   
-         <RouterLink class="routerItem" to="/HomeView">HomeView</RouterLink>
+    <nav class="topNav">
+        <RouterLink to="/questHome">合成獸全面進化!!!!</RouterLink>
+    </nav>
 
-      <RouterLink class="routerItem" to="/askDetail">問卷調查局</RouterLink>
-
-</nav> 
-   <!-- <button @click="change"></button>
-  <p>{{ location}}</p> -->
+    <!-- <p>{{ this.location }}</p> -->
 </template>
-
 <style lang="scss" scoped>
-
-.topNav{
-    width: 100%;
+.topNav {
     height: 100%;
-    border-color: aqua;
-    font-size: 24pt;
-    color: white;
-    display: flex;
+    background-color: rgb(0, 0, 0);
+    font-size: 36pt;
+     display: flex;
     justify-content: space-around;
-
-}
-a{
-    text-decoration: none;
-    transition: 0.3ms;
-    &:hover{
-        color: aqua;
-        background-color: rgb(149, 149, 149);
+    align-items: center;
+    a {
+        text-decoration: none;
+        color: rgb(228, 0, 0);
     }
 }
 </style>
-
