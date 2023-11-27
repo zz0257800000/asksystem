@@ -6,20 +6,8 @@ export default {
             description: '',
             startDate: '',
             endDate: '',
-            questArr: [
-                {
-                    quId: 0,
-                qnId: 0,
-                questionType: '',
-                qTitle: '', // Modify to match the backend attribute name
-                optionsType: '', // Modify to match the backend attribute name
-                
-                options: [], // Ensure it's an array
-                questionText: '',
-                optionText: '',
-                },
-                // 其他 quest 对象...
-            ], questionTypes: ["radio", "checkbox", "text"],
+            questArr: [],
+questionTypes: ["radio", "checkbox", "text"],
             questionList: [],
 
         }
@@ -99,7 +87,6 @@ export default {
                 const optionTextArray = quest.options.map(option => option.text);
                 this.questArr[questionIndex].optionText = optionTextArray.join(';');
             });
-            console.log('Sending data to server:', JSON.stringify(newQuestionnaire)); // 添加这行
 
             fetch('http://localhost:8080/api/quiz/create', {
                 method: 'POST',
@@ -130,6 +117,7 @@ export default {
 </script>
 
 <template>
+    ///{{qTitle}}
     <div class="createQuestPageBody">
         <div class="createQuestHeader">
             <div>

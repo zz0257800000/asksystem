@@ -14,7 +14,7 @@ export default {
     },
     
     mounted() {
-        // this.search();
+        this.searchParam();
         
         
     },
@@ -26,27 +26,7 @@ export default {
     },
 
     methods: {
-    //     search() {
-    //   // 你的搜索逻辑
-    //   fetch('http://localhost:8080/api/quiz/search', {
-    //     method: 'POST', // 根据你的后端接口要求选择请求方法
-    //     headers: {
-    //       'Content-Type': 'application/json'
-    //     },
-    //     body: JSON.stringify({
-    //       title: this.searchText,
-    //       startDate: this.searchStartTime,
-    //       endDate: this.searchEndTime
-    //     })
-    //   })
-    //   .then(response => response.json())
-    //   .then(data => {
-    //     console.log(data);
-    //     this.searchAllList.questionnaire = data.quizVoList.map(item => item.questionnaire);
-    //     this.searchAllList.questionList = data.quizVoList.map(item => item.questionList);
-    //   })
-    //   .catch(error => console.error('Error:', error));
-    // },
+       
    
         searchParam() {
             const title = this.searchText;

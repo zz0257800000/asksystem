@@ -16,7 +16,7 @@ export default {
 </script>
 <template>
     <nav class="topNav">
-        <RouterLink to="/questHome">QuestHome</RouterLink>
+        <RouterLink to="/questHome">合成獸</RouterLink>
     </nav>
 
     <!-- <p>{{ this.location }}</p> -->
@@ -25,7 +25,7 @@ export default {
 .topNav {
     height: 100%;
     background-color: #000000;
-    font-size: 16pt;
+    font-size: 28pt;
     display: flex;
     justify-content: space-around;
     align-items: center;
