@@ -14,7 +14,7 @@ export default {
     },
     
     mounted() {
-        this.search();
+        // this.search();
         
         
     },
@@ -26,35 +26,34 @@ export default {
     },
 
     methods: {
-        search() {
-            fetch('http://localhost:8080/api/search', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log(data);
-                    this.searchAllList.questionnaire = data.quizVoList.map(item => item.questionnaire);
-                    this.searchAllList.questionList = data.quizVoList.map(item => item.questionList);
-
-                    console.log(this.searchAllList);
-                })
-
-                .catch(error => console.error('Error:', error));
-        },
+    //     search() {
+    //   // 你的搜索逻辑
+    //   fetch('http://localhost:8080/api/quiz/search', {
+    //     method: 'POST', // 根据你的后端接口要求选择请求方法
+    //     headers: {
+    //       'Content-Type': 'application/json'
+    //     },
+    //     body: JSON.stringify({
+    //       title: this.searchText,
+    //       startDate: this.searchStartTime,
+    //       endDate: this.searchEndTime
+    //     })
+    //   })
+    //   .then(response => response.json())
+    //   .then(data => {
+    //     console.log(data);
+    //     this.searchAllList.questionnaire = data.quizVoList.map(item => item.questionnaire);
+    //     this.searchAllList.questionList = data.quizVoList.map(item => item.questionList);
+    //   })
+    //   .catch(error => console.error('Error:', error));
+    // },
+   
         searchParam() {
             const title = this.searchText;
             const startDate = this.searchStartTime;
             const endDate = this.searchEndTime;
 
-            const url = new URL('http://localhost:8080/api/quiz/searchParam');
+            const url = new URL(`http://localhost:8080/api/quiz/searchParam?startDate=${startDate}&endDate=${endDate}&title=${title}`);
             url.searchParams.append('question_name', title);
             url.searchParams.append('start_Time', startDate);
             url.searchParams.append('end_Time', endDate);
@@ -75,7 +74,7 @@ export default {
 
                     console.log(data);
                     this.searchAllList.questionnaire = data.quizVoList.map(item => item.questionnaire);
-        this.searchAllList.questionList = data.quizVoList.map(item => item.questionList);
+                    this.searchAllList.questionList = data.quizVoList.map(item => item.questionList);
 
                 })
                 .catch(error => console.error('Error:', error));
@@ -87,34 +86,41 @@ export default {
             return this.searchAllList.questionnaire.slice(startIndex, endIndex);
         },
         deleteQuestionnaires() {
-    // 假設你有一個存儲問卷 id 的列表，例如 questionnaireIds
-    const url = 'http://localhost:8080/api/quiz/delete';
+  // 提取要删除的调查问卷的 ID
+  const questionnaireIds = this.searchAllList.questionnaire.map(item => item.questionnaireId);
 
-    fetch(url, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(questionnaireIds)
+  if (questionnaireIds.length === 0) {
+    console.error('No questionnaire IDs provided for deletion.');
+    return;
+  }
+
+  // 实际调用后端 API 进行删除操作
+  questionnaireIds.forEach(questionnaireId => {
+    fetch(`http://localhost:8080/api/questionnaire/${questionnaireId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
     })
-    .then(response => {
+      .then(response => {
         if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+          throw new Error(`HTTP error! Status: ${response.status}`);
         }
         return response.json();
-    })
-    .then(data => {
-        // 處理刪除成功後的回應
+      })
+      .then(data => {
         console.log('Delete successful:', data);
-        // 更新前端狀態，例如重新加載問卷列表等
-    })
-    .catch(error => {
+      })
+      .catch(error => {
         console.error('Error:', error);
-        // 處理錯誤，例如顯示錯誤信息給用戶
-    });
-}
+        // 处理错误，例如显示错误信息给用户
+      });
+  });
 
-    }
+  // 假设删除成功，更新本地数据（可选，根据实际需求）
+  this.searchAllList.questionnaire = this.searchAllList.questionnaire.filter(item => !questionnaireIds.includes(item.questionnaireId));
+}
+  }
 };
 </script>
 
@@ -124,7 +130,7 @@ export default {
             <div class="searchListTop">
                 <label>問卷標題(列表頁)</label>
                 <button class="DeLeteButton" v-on:click="deleteQuestionnaires()">全部毀滅</button>
-
+                
                 <input type="search" v-model="searchText">
             </div>
             <div class="searchListDown">
@@ -149,16 +155,19 @@ export default {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(quest, index) in getPage(currentPage)" :key="index">
-                        <td>{{ index + 1 }}</td>
-                        <td><router-link :to="'/questHome/doQuestPage/'+quest.questionnaireId">{{ quest.title
-                        }}</router-link></td> 
-                        <td>狀態</td>
-                        <td>{{ quest.startDate }}</td>
-                        <td>{{ quest.endDate }}</td>
-                        <td><router-link :to="'/questHome/showDetailPage'">觀看統計</router-link></td>
-                    </tr>
-                </tbody>
+          <tr v-for="(quest, index) in getPage(currentPage)" :key="index">
+            <td>{{ index + 1 }}</td>
+            <td>
+              <router-link :to="'/questHome/doQuestPage/' + quest.questionnaireId">{{ quest.title }}</router-link>
+            </td>
+            <td>狀態</td>
+            <td>{{ quest.startDate }}</td>
+            <td>{{ quest.endDate }}</td>
+            <td>
+              <router-link :to="'/questHome/showDetailPage'">觀看統計</router-link>
+            </td>
+          </tr>
+        </tbody>
             </table>
         </div>
         <div class="showPages">
