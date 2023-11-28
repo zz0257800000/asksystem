@@ -42,7 +42,8 @@ export default {
                 optionsType: '',
                 options: [],
                 questionText: '',
-                optionText: ''
+                optionText: '',
+          
             };
             this.questArr.push(newQuestion);
             this.questionList.push(newQuestion);
@@ -138,23 +139,25 @@ export default {
         </div>
 
         <div class="createQuest" v-for="(quest, questionIndex) in questArr" :key="questionIndex">
-            <label>第{{ questionIndex + 1 }}题</label>
-            <select v-model="quest.optionsType">
-                <option v-for="(type, index) in optionsType" :key="index" :value="type">
-                    {{ type === 'radio' ? '单选' : type === 'checkbox' ? '复选' : '简答' }}
-                </option>
+            <label>第{{ questionIndex + 1 }}題</label>
+            <select v-model="quest.questionType">
+                <option v-for="(type, index) in optionsType" :key="index" :value="type">{{ type === 'radio' ? '單選' : type
+                    === 'checkbox' ? '複選' : '簡答' }}</option>
             </select>
-            <input type="text" v-model="quest.qTitle" placeholder="输入题目">
-            <button @click="createNewOptions(questionIndex)">新增选项</button>
+            <input type="text" v-model="quest.qTitle" placeholder="輸入題目">
+            <button @click="createNewOptions(questionIndex)">新增選項</button>
 
             <div class="NewOptions" v-for="(option, optionIndex) in quest.options" :key="optionIndex">
-                <input v-if="quest.optionsType === 'radio'" type="radio" name="radioGroup" v-model="option.selected">
-                <input v-if="quest.optionsType === 'checkbox'" type="checkbox" v-model="option.selected">
-                <input type="text" placeholder="输入选项" v-model="option.text">
-                <button style="background-color: red;" @click="deleteNewOptions(questionIndex, optionIndex)">删除选项</button>
+                <input v-if="quest.questionType === 'radio'" type="radio" name="radioGroup"
+                    v-model="quest.options[optionIndex].selected">
+                <input v-if="quest.questionType === 'checkbox'" type="checkbox"
+                    v-model="quest.options[optionIndex].selected">
+                <input type="text" placeholder="輸入選項" v-model="quest.options[optionIndex].text">
+                <button style="background-color: red;" @click="deleteNewOptions(questionIndex, optionIndex)">刪除選項</button>
             </div>
 
-            <button style="margin-left: 43px; background-color: rgb(70, 70, 70);" @click="deleteNewQuest(questionIndex)">删除问题</button>
+            <button style="margin-left: 43px; background-color: red;"
+                v-on:click="deleteNewQuest(questionIndex)">刪除問題</button>
         </div>
     </div>
 </template>
@@ -170,9 +173,9 @@ export default {
   padding: 20px;
   min-height: 90vh;
 
-
   .createQuestHeader {
     width: 900px;
+    color: #ecf0f1;
     height: auto;
     border: 1px solid #34495e;
     border-radius: 10px;
@@ -182,7 +185,7 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-
+   
     div {
       width: 100%;
       margin: 10px 0;

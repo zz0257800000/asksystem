@@ -1,256 +1,202 @@
 <script>
 export default {
-    data() {
-        return {
-            searchAllList: {
-                questionnaire: [],
-                questionList: []
-            },
-            searchText: '',
-            searchStartTime: '',
-            searchEndTime: '',
-            currentPage: 1,// 初始化当前页数为1
-        };
-    },
-    
-    mounted() {
-        this.searchParam();
-        
-        
-    },
-    computed: {
-        totalPages() {
-            const pageSize = 10; // 每页显示的数量
-            return Math.ceil(this.searchAllList.questionnaire.length / pageSize);
-        }
-    },
-
-    methods: {
-       
-   
-        searchParam() {
-            const title = this.searchText;
-            const startDate = this.searchStartTime;
-            const endDate = this.searchEndTime;
-
-            const url = new URL(`http://localhost:8080/api/quiz/searchParam?startDate=${startDate}&endDate=${endDate}&title=${title}`);
-            url.searchParams.append('question_name', title);
-            url.searchParams.append('start_Time', startDate);
-            url.searchParams.append('end_Time', endDate);
-
-            fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-
-                    console.log(data);
-                    this.searchAllList.questionnaire = data.quizVoList.map(item => item.questionnaire);
-                    this.searchAllList.questionList = data.quizVoList.map(item => item.questionList);
-
-                })
-                .catch(error => console.error('Error:', error));
-        },
-        getPage(pageNum) {
-            const pageSize = 10; // 每页显示的数量
-            const startIndex = (pageNum - 1) * pageSize;
-            const endIndex = startIndex + pageSize;
-            return this.searchAllList.questionnaire.slice(startIndex, endIndex);
-        },
-        deleteQuestionnaires() {
-  // 提取要删除的调查问卷的 ID
-  const questionnaireIds = this.searchAllList.questionnaire.map(item => item.questionnaireId);
-
-  if (questionnaireIds.length === 0) {
-    console.error('No questionnaire IDs provided for deletion.');
-    return;
-  }
-
-  // 实际调用后端 API 进行删除操作
-  questionnaireIds.forEach(questionnaireId => {
-    fetch(`http://localhost:8080/api/questionnaire/${questionnaireId}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
+  data() {
+    return {
+      searchAllList: {
+        questionnaire: [],
+        questionList: []
       },
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log('Delete successful:', data);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        // 处理错误，例如显示错误信息给用户
-      });
-  });
+      searchText: '',
+      searchStartTime: '',
+      searchEndTime: '',
+      currentPage: 1,// 初期のページは1
+    };
+  },
 
-  // 假设删除成功，更新本地数据（可选，根据实际需求）
-  this.searchAllList.questionnaire = this.searchAllList.questionnaire.filter(item => !questionnaireIds.includes(item.questionnaireId));
-}
+  mounted() {
+    this.searchParam();
+  },
+  computed: {
+    totalPages() {
+      const pageSize = 10; // 1ページに表示されるアイテム数
+      return Math.ceil(this.searchAllList.questionnaire.length / pageSize);
+    }
+  },
+
+  methods: {
+    searchParam() {
+      const title = this.searchText;
+      const startDate = this.searchStartTime;
+      const endDate = this.searchEndTime;
+
+      const url = new URL(`http://localhost:8080/api/quiz/searchParam?startDate=${startDate}&endDate=${endDate}&title=${title}`);
+      url.searchParams.append('question_name', title);
+      url.searchParams.append('start_Time', startDate);
+      url.searchParams.append('end_Time', endDate);
+
+      fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+
+          console.log(data);
+          this.searchAllList.questionnaire = data.quizVoList.map(item => item.questionnaire);
+          this.searchAllList.questionList = data.quizVoList.map(item => item.questionList);
+
+        })
+        .catch(error => console.error('Error:', error))
+        .finally(() => {
+          // 清空搜尋條件
+          this.searchStartTime = '';
+          this.searchEndTime = '';
+          this.searchText = '';
+        });
+    },
+    getPage(pageNum) {
+      const pageSize = 10; // 1ページに表示されるアイテム数
+      const startIndex = (pageNum - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+      return this.searchAllList.questionnaire.slice(startIndex, endIndex);
+    },
+    deleteQuestionnaires() {
+      // 削除するアンケートのIDを抽出
+      const questionnaireIds = this.searchAllList.questionnaire.map(item => item.questionnaireId);
+
+      if (questionnaireIds.length === 0) {
+        console.error('削除するアンケートのIDが提供されていません。');
+        return;
+      }
+
+      // 実際にバックエンドAPIを呼び出して削除操作を行う
+      questionnaireIds.forEach(questionnaireId => {
+        fetch(`http://localhost:8080/api/questionnaire/${questionnaireId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log('削除成功:', data);
+          })
+          .catch(error => {
+            console.error('エラー:', error);
+            // エラーを処理する（例: ユーザーにエラーメッセージを表示する）
+          });
+      });
+
+      // 削除が成功したと仮定して、ローカルデータを更新する（オプション、実際の要件に応じて）
+      this.searchAllList.questionnaire = this.searchAllList.questionnaire.filter(item => !questionnaireIds.includes(item.questionnaireId));
+    }
   }
 };
 </script>
 
 <template>
-    <div class="questHomeBody">
-      <div class="searchList">
-        <div class="searchListTop">
-          <label>問卷標題(列表頁)</label>
-          <button class="deleteButton" @click="deleteQuestionnaires()">全部毀滅</button>
-          <input type="search" v-model="searchText" placeholder="搜尋問卷">
-        </div>
-        <div class="searchListDown">
-          <label for="">開始/結束</label>
-          <input class="searchInput" type="date" v-model="searchStartTime">
-          <input class="searchInput" type="date" v-model="searchEndTime">
-          <button class="searchButton" @click="searchParam()">搜尋</button>
-          <router-link to="/questHome/createQuestPage">
-            <button class="createButton">新增問卷</button>
-          </router-link>
-        </div>
+  <div class="questHomeBody">
+    <div class="searchList">
+      <div class="searchListTop">
+        <label>アンケートタイトル（リストページ）</label>
+        <label for="">開始/終了</label>
+        <input class="searchInput" type="date" v-model="searchStartTime">
+        <input class="searchInput" type="date" v-model="searchEndTime">
+
+
+        <input type="search" v-model="searchText" placeholder="アンケートを検索">
+
+        <button class="searchButton" @click="searchParam()">検索</button>
+
       </div>
-      <div class="showList">
-        <table>
-          <thead>
-            <tr>
-              <th>＃</th>
-              <th>問卷(新的列表fromDB)</th>
-              <th>狀態</th>
-              <th>開始時間</th>
-              <th>結束時間</th>
-              <th>觀看統計</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(quest, index) in getPage(currentPage)" :key="index">
-              <td>{{ index + 1 }}</td>
-              <td>
-                <router-link :to="'/questHome/doQuestPage/' + quest.questionnaireId">{{ quest.title }}</router-link>
-              </td>
-              <td>狀態</td>
-              <td>{{ quest.startDate }}</td>
-              <td>{{ quest.endDate }}</td>
-              <td>
-                <router-link :to="'/questHome/showDetailPage'">觀看統計</router-link>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="showPages">
-        <button v-for="page in totalPages" :key="page" @click="currentPage = page" class="pageButton">
-          {{ page }}
-        </button>
+      <div class="searchListDown">
+        <button class="deleteButton" @click="deleteQuestionnaires()">全滅</button>
+
+        <router-link to="/questHome/createQuestPage">
+          <button class="createButton">アンケートの追加</button>
+        </router-link>
       </div>
     </div>
-  </template>
-  
-  <style lang="scss" scoped>
-  .questHomeBody {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #1a1a1a;
-    padding: 20px;
-    color: #fff;
-  
-    .searchList {
-      width: 100%;
-      border: 1px solid #333;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      background-color: #222;
-  
-      .searchListTop,
-      .searchListDown {
-        padding: 15px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-  
-      label {
-        margin-right: 10px;
-      }
-  
-      .deleteButton,
-      .searchButton,
-      .createButton {
-        padding: 10px;
-        background-color: #3498db;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-      }
-  
-      .deleteButton:hover,
-      .searchButton:hover,
-      .createButton:hover {
-        background-color: #2980b9;
-      }
-  
-      input {
-        padding: 8px;
-        border: 1px solid #333;
-        border-radius: 5px;
-        margin-right: 10px;
-        color: #333;
-        background-color: #fff;
-      }
-    }
-  
-    .showList {
-      width: 100%;
-      border: 1px solid #333;
-      border-radius: 10px;
-      overflow: auto;
-      background-color: #222;
-        min-height: 65vh;
-      table {
-        width: 100%;
-        border-collapse: collapse;
-  
-        th,
-        td {
-          border: 1px solid #333;
-          padding: 12px;
-          text-align: center;
-        }
-  
-        th {
-          background-color: #111;
-        }
-  
-        tr:nth-child(even) {
-          background-color: #333;
-        }
-      }
-    }
-  
-    .showPages {
+    <div class="showList">
+      <table>
+        <thead>
+          <tr>
+            <th>＃</th>
+            <th>アンケート</th>
+            <th>ステータス</th>
+            <th>開始時間</th>
+            <th>終了時間</th>
+            <th>統計情報を見る</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(quest, index) in getPage(currentPage)" :key="index">
+            <td>{{ index + 1 }}</td>
+            <td>
+              <router-link :to="'/questHome/doQuestPage/' + quest.id">{{ quest.title }}</router-link>
+            </td>
+            <td>ステータス</td>
+            <td>{{ quest.startDate }}</td>
+            <td>{{ quest.endDate }}</td>
+            <td>
+              <router-link :to="'/questHome/showDetailPage'">統計情報を見る</router-link>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="showPages">
+      <button v-for="page in totalPages" :key="page" @click="currentPage = page" class="pageButton">
+        {{ page }}
+      </button>
+    </div>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.questHomeBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #1a1a1a;
+  padding: 20px;
+  color: #fff;
+
+  .searchList {
+    width: 100%;
+    border: 1px solid #333;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    background-color: #222;
+
+    .searchListTop,
+    .searchListDown {
+      padding: 15px;
       display: flex;
-      justify-content: center;
-      margin-top: 20px;
-      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
     }
-  
-    .pageButton {
-      padding: 8px 12px;
+
+    label {
+      margin-right: 10px;
+    }
+
+    .deleteButton,
+    .searchButton,
+    .createButton {
+      padding: 10px;
       background-color: #3498db;
       color: #fff;
       border: none;
@@ -258,10 +204,71 @@ export default {
       cursor: pointer;
       transition: background-color 0.3s;
     }
-  
-    .pageButton:hover {
+
+    .deleteButton:hover,
+    .searchButton:hover,
+    .createButton:hover {
       background-color: #2980b9;
     }
+
+    input {
+      padding: 8px;
+      border: 1px solid #333;
+      border-radius: 5px;
+      margin-right: 10px;
+      color: #333;
+      background-color: #fff;
+    }
   }
-  </style>
-  
+
+  .showList {
+    width: 100%;
+    border: 1px solid #333;
+    border-radius: 10px;
+    overflow: auto;
+    background-color: #222;
+    min-height: 65vh;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+
+      th,
+      td {
+        border: 1px solid #333;
+        padding: 12px;
+        text-align: center;
+      }
+
+      th {
+        background-color: #111;
+      }
+
+      tr:nth-child(even) {
+        background-color: #333;
+      }
+    }
+  }
+
+  .showPages {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 10px;
+  }
+
+  .pageButton {
+    padding: 8px 12px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .pageButton:hover {
+    background-color: #2980b9;
+  }
+}
+</style>

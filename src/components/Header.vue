@@ -16,7 +16,7 @@ export default {
 </script>
 <template>
     <nav class="topNav">
-        <RouterLink to="/questHome">合成獸</RouterLink>
+        <RouterLink to="/questHome">合成獸全面進化!!!</RouterLink>
     </nav>
 
     <!-- <p>{{ this.location }}</p> -->
