@@ -2,6 +2,9 @@
 import previewdoQuestPage from '../quest/previewDoQuestPage.vue';
 
 export default {
+  props: {
+    checkinfo: Object,
+  },
   data() {
     return {
       searchAllList: {
@@ -15,7 +18,7 @@ export default {
         userAge: '',
       },
       userResponses: [],
-
+      
 
       page: 1,
     };
@@ -96,30 +99,30 @@ export default {
             </div>
 
             <div class="fluidQuest">
-  <div v-for="(question, questionIndex) in searchAllList.questionList" :key="questionIndex">
-    <label>問題 {{ questionIndex + 1 }}: {{ question.qTitle }}</label>
+    <div v-for="(question, questionIndex) in searchAllList.questionList" :key="questionIndex">
+        <label>問題 {{ questionIndex + 1 }}: {{ question.qTitle }}</label>
 
-    <div v-if="question.optionsType === 'radio'">
-      <div v-for="(option, optionIndex) in question.optionText.split(';')" :key="optionIndex">
-        <input type="radio" :id="'q_' + questionIndex + '_o_' + optionIndex" :value="option"
-          v-model="questionOptions[questionIndex]">
-        <label :for="'q_' + questionIndex + '_o_' + optionIndex">{{ option }}</label>
-      </div>
-    </div>
+        <div v-if="question.optionsType === 'Qz'">
+            <div v-for="(option, optionIndex) in question.options.split(';')" :key="optionIndex">
+                <input type="radio" :id="'q_' + questionIndex + '_o_' + optionIndex" :value="option"
+                    v-model="question.selectedOption">
+                <label :for="'q_' + questionIndex + '_o_' + optionIndex">{{ option }}</label>
+            </div>
+        </div>
 
-    <div v-else-if="question.optionsType === 'checkbox'">
-      <div v-for="(option, optionIndex) in question.optionText.split(';')" :key="optionIndex">
-        <input type="checkbox" :id="'q_' + questionIndex + '_o_' + optionIndex" :value="option"
-          v-model="questionOptions[questionIndex]">
-        <label :for="'q_' + questionIndex + '_o_' + optionIndex">{{ option }}</label>
-      </div>
-    </div>
+        <div v-else-if="question.optionsType === 'Mz'">
+            <div v-for="(option, optionIndex) in question.options.split(';')" :key="optionIndex">
+                <input type="checkbox" :id="'q_' + questionIndex + '_o_' + optionIndex" :value="option"
+                    v-model="question.selectedOptions">
+                <label :for="'q_' + questionIndex + '_o_' + optionIndex">{{ option }}</label>
+            </div>
+        </div>
 
-    <div v-else-if="question.optionsType === 'text'">
-      <input type="text" v-model="questionOptions[questionIndex]">
+        <div v-else-if="question.optionsType === 'Text'">
+            <input type="text" v-model="question.userResponse">
+        </div>
     </div>
-  </div>
-  <button @click="goToPreviewPage">預覽填寫結果</button>
+    <button @click="goToPreviewPage">預覽填寫結果</button>
 </div>
         </div>
         </div>
