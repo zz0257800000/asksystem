@@ -4,8 +4,8 @@ export default {
     data() {
         return {
             searchAllList: {
-                hwQuestionnaireList: [],
-                hwQuestionList: []
+                questionnaire: [],
+                questionList: []
             },
             doquestArr: {
                 userName: '',

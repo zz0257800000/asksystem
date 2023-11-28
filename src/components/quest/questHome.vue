@@ -106,164 +106,162 @@ export default {
 
 <template>
     <div class="questHomeBody">
-        <div class="searchList">
-            <div class="searchListTop">
-                <label>問卷標題(列表頁)</label>
-                <button class="DeLeteButton" v-on:click="deleteQuestionnaires()">全部毀滅</button>
-                
-                <input type="search" v-model="searchText">
-            </div>
-            <div class="searchListDown">
-                <label for="">開始/結束</label>
-                <input class="searchStartTime" type="date" v-model="searchStartTime">
-                <input class="searchEndTime" type="date" v-model="searchEndTime">
-                <button class="searchButton" v-on:click="searchParam()">搜尋</button>
-                <button><a href="/questHome/createQuestPage">新增問卷</a></button>
-            </div>
+      <div class="searchList">
+        <div class="searchListTop">
+          <label>問卷標題(列表頁)</label>
+          <button class="deleteButton" @click="deleteQuestionnaires()">全部毀滅</button>
+          <input type="search" v-model="searchText" placeholder="搜尋問卷">
         </div>
-        <div class="showList">
-            <table>
-                <thead>
-                    <tr>
-                        <th>＃</th>
-                        <th>問卷(新的列表fromDB)
-                        </th>
-                        <th>狀態</th>
-                        <th>開始時間</th>
-                        <th>結束時間</th>
-                        <th>觀看統計</th>
-                    </tr>
-                </thead>
-                <tbody>
-          <tr v-for="(quest, index) in getPage(currentPage)" :key="index">
-            <td>{{ index + 1 }}</td>
-            <td>
-              <router-link :to="'/questHome/doQuestPage/' + quest.questionnaireId">{{ quest.title }}</router-link>
-            </td>
-            <td>狀態</td>
-            <td>{{ quest.startDate }}</td>
-            <td>{{ quest.endDate }}</td>
-            <td>
-              <router-link :to="'/questHome/showDetailPage'">觀看統計</router-link>
-            </td>
-          </tr>
-        </tbody>
-            </table>
+        <div class="searchListDown">
+          <label for="">開始/結束</label>
+          <input class="searchInput" type="date" v-model="searchStartTime">
+          <input class="searchInput" type="date" v-model="searchEndTime">
+          <button class="searchButton" @click="searchParam()">搜尋</button>
+          <router-link to="/questHome/createQuestPage">
+            <button class="createButton">新增問卷</button>
+          </router-link>
         </div>
-        <div class="showPages">
-            <button v-for="page in totalPages" :key="page" @click="currentPage = page" class="pageButton">
-                {{ page }}
-            </button>
-        </div>
+      </div>
+      <div class="showList">
+        <table>
+          <thead>
+            <tr>
+              <th>＃</th>
+              <th>問卷(新的列表fromDB)</th>
+              <th>狀態</th>
+              <th>開始時間</th>
+              <th>結束時間</th>
+              <th>觀看統計</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(quest, index) in getPage(currentPage)" :key="index">
+              <td>{{ index + 1 }}</td>
+              <td>
+                <router-link :to="'/questHome/doQuestPage/' + quest.questionnaireId">{{ quest.title }}</router-link>
+              </td>
+              <td>狀態</td>
+              <td>{{ quest.startDate }}</td>
+              <td>{{ quest.endDate }}</td>
+              <td>
+                <router-link :to="'/questHome/showDetailPage'">觀看統計</router-link>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="showPages">
+        <button v-for="page in totalPages" :key="page" @click="currentPage = page" class="pageButton">
+          {{ page }}
+        </button>
+      </div>
     </div>
-</template>
-
-<style lang="scss" scoped>
-.questHomeBody {
+  </template>
+  
+  <style lang="scss" scoped>
+  .questHomeBody {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #bebebe;
-    /* 设置背景颜色 */
-
+    background-color: #1a1a1a;
+    padding: 20px;
+    color: #fff;
+  
     .searchList {
-        margin-top: 15px;
-        width: 900px;
-        height: auto;
-        /* 自适应内容高度 */
-        border: 1px solid #ccc;
+      width: 100%;
+      border: 1px solid #333;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      background-color: #222;
+  
+      .searchListTop,
+      .searchListDown {
         padding: 15px;
-        border-radius: 10px;
-        /* 圆角边框 */
         display: flex;
-        flex-direction: column;
+        justify-content: space-between;
         align-items: center;
-        justify-content: center;
-
-        .searchListTop {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-
-        .searchListDown {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        label,
-        input,
-        button,
-        a {
-            margin: 5px;
-            /* 添加一些间距 */
-        }
-    }
-
-    .showList {
-        margin-top: 15px;
-        width: 900px;
-        height: 495px;
-        // max-height: 400px;
-        /* 设置最大高度以防止表格过长 */
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        /* 圆角边框 */
-        overflow: auto;
-        /* 添加滚动条，以防表格内容过长 */
-        background-color: #fff;
-        /* 设置白色背景 */
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            border-spacing: 0;
-            /* 移除表格间距 */
-        }
-
-        th,
-        td {
-            border: 1px solid #ccc;
-            padding: 10px;
-            text-align: center;
-        }
-
-        th {
-            background-color: #f0f0f0;
-            /* 表头背景颜色 */
-        }
-
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-            /* 隔行背景颜色 */
-        }
-    }
-
-    .showPages {
-        display: flex;
-        justify-content: center;
-        /* 水平居中 */
-        margin-top: 15px;
-        gap: 10px;
-        /* 间距 */
-    }
-
-    .pageButton {
-        padding: 5px 10px;
-        background-color: #f0f0f0;
-        border: 1px solid #ccc;
+      }
+  
+      label {
+        margin-right: 10px;
+      }
+  
+      .deleteButton,
+      .searchButton,
+      .createButton {
+        padding: 10px;
+        background-color: #3498db;
+        color: #fff;
+        border: none;
         border-radius: 5px;
         cursor: pointer;
+        transition: background-color 0.3s;
+      }
+  
+      .deleteButton:hover,
+      .searchButton:hover,
+      .createButton:hover {
+        background-color: #2980b9;
+      }
+  
+      input {
+        padding: 8px;
+        border: 1px solid #333;
+        border-radius: 5px;
+        margin-right: 10px;
+        color: #333;
+        background-color: #fff;
+      }
     }
-
+  
+    .showList {
+      width: 100%;
+      border: 1px solid #333;
+      border-radius: 10px;
+      overflow: auto;
+      background-color: #222;
+        min-height: 65vh;
+      table {
+        width: 100%;
+        border-collapse: collapse;
+  
+        th,
+        td {
+          border: 1px solid #333;
+          padding: 12px;
+          text-align: center;
+        }
+  
+        th {
+          background-color: #111;
+        }
+  
+        tr:nth-child(even) {
+          background-color: #333;
+        }
+      }
+    }
+  
+    .showPages {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      gap: 10px;
+    }
+  
+    .pageButton {
+      padding: 8px 12px;
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+  
     .pageButton:hover {
-        background-color: #ccc;
-        /* 鼠标悬停时的背景色 */
+      background-color: #2980b9;
     }
-
-
-
-}
-</style>
+  }
+  </style>
+  
