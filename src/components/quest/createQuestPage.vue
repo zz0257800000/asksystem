@@ -13,8 +13,8 @@ export default {
             description: '',
             published: this.published,
             questionTypes: ["radio", "checkbox", "text"],
-                question: '',
-                options: [{ text: '' }],
+            question: '',
+            options: [{ text: '' }],
 
         }
     },
@@ -49,6 +49,8 @@ export default {
                 text: ''
             };
             this.questArr[questionIndex].options.push(newOption);
+            const optionsString = this.questArr[questionIndex].options.map(option => option.text).join(';');
+            console.log(optionsString);
         },
 
         deleteNewQuest(questionIndex) {
@@ -64,9 +66,9 @@ export default {
         },
 
         postToDB() {
-            
 
-          
+
+
             if (!this.title || !this.startDate || !this.endDate) {
                 alert("请填写所有必填项");
                 return;
@@ -77,7 +79,7 @@ export default {
                     qTitle: quest.question,
                     optionsType: quest.questionType,
                     necessary: this.published,
-                    options: quest.options.map(option => option.text).join(','),
+                    options: quest.options.map(option => option.text).join(';'),
                 };
             });
             const newQuestionnaire = {
@@ -162,10 +164,11 @@ export default {
 
             <div class="NewOptions" v-for="(option, optionIndex) in quest.options" :key="optionIndex">
                 <input v-if="quest.questionType === 'radio'" type="radio" :name="'radioGroup_' + questionIndex"
-                v-model="quest.options[optionIndex].selected">
-                <input v-if="quest.questionType === 'checkbox'" type="checkbox" 
-                v-model="quest.options[optionIndex].selected">
-                <input type="text" placeholder="輸入選項" v-model="quest.options[optionIndex].text" :disabled="quest.questionType === 'text'">
+                    v-model="quest.options[optionIndex].selected">
+                <input v-if="quest.questionType === 'checkbox'" type="checkbox"
+                    v-model="quest.options[optionIndex].selected">
+                <input type="text" placeholder="輸入選項" v-model="quest.options[optionIndex].text"
+                    :disabled="quest.questionType === 'text'">
 
                 <button style="background-color: red;" @click="deleteNewOptions(questionIndex, optionIndex)">刪除選項</button>
             </div>
