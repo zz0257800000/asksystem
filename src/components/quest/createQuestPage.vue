@@ -4,28 +4,24 @@ export default {
         return {
             searchAllList: {
                 questionnaire: [],
-                questionList: [{
-                optionsType: ["radio", "checkbox", "text"],
-                qTitle: '',
-                options: ["",""],
-            }]
+                questionList: []
             },
             title: '',
-            description: '',
             startDate: '',
             endDate: '',
             questArr: [],
-            optionsType: ["radio", "checkbox", "text"],
-           
+            description: '',
+            published: this.published,
+            questionTypes: ["radio", "checkbox", "text"],
+                question: '',
+                options: [{ text: '' }],
 
         }
-    }, computed: {
-        // 計算屬性，用於設置最小日期
+    },
+    computed: {
         minStartDate() {
             const today = new Date();
-            // 將日期加一天，以確保能夠選擇今天以後的日期
             today.setDate(today.getDate() + 1);
-            // 將日期轉換為 "yyyy-mm-dd" 格式
             const formattedToday = today.toISOString().split('T')[0];
             return formattedToday;
         },
@@ -37,17 +33,11 @@ export default {
                 return;
             }
             const newQuestion = {
-                questionType: '',
-                qTitle: '',
-                optionsType: '',
-                options: [],
-                questionText: '',
-                optionText: '',
-          
+                questionTypes: ["radio", "checkbox", "text"],
+                question: '',
+                options: [{ text: '' }],
             };
             this.questArr.push(newQuestion);
-            this.questionList.push(newQuestion);
-
         },
 
         createNewOptions(questionIndex) {
@@ -60,6 +50,7 @@ export default {
             };
             this.questArr[questionIndex].options.push(newOption);
         },
+
         deleteNewQuest(questionIndex) {
             if (this.questArr.length > 1) {
                 this.questArr.splice(questionIndex, 1);
@@ -67,24 +58,38 @@ export default {
                 alert("至少需要保留一个问题。");
             }
         },
+
         deleteNewOptions(questionIndex, optionIndex) {
             this.questArr[questionIndex].options.splice(optionIndex, 1);
         },
+
         postToDB() {
-            // 檢查必填項目
+            
+
+          
             if (!this.title || !this.startDate || !this.endDate) {
-                alert("請填寫所有必填項目");
-                return; // 不進行 POST 請求和跳轉
+                alert("请填写所有必填项");
+                return;
             }
+            const questionList = this.questArr.map((quest, quid) => {
+                return {
+                    quid: quid + 1,
+                    qTitle: quest.question,
+                    optionsType: quest.questionType,
+                    necessary: this.published,
+                    options: quest.options.map(option => option.text).join(','),
+                };
+            });
             const newQuestionnaire = {
                 questionnaire: {
                     title: this.title,
+                    description: this.description,
+                    published: this.published, // Include the published status
                     startDate: this.startDate,
                     endDate: this.endDate,
                 },
-                questionList: this.questionList,
+                questionList: questionList,
             };
-
 
             fetch('http://localhost:8080/api/quiz/create', {
                 method: 'POST',
@@ -98,7 +103,6 @@ export default {
                         throw new Error(`HTTP error! Status: ${response.status}`);
                     }
                     return response.json();
-
                 })
                 .then(data => {
                     console.log(data);
@@ -107,57 +111,66 @@ export default {
                     console.log(this.searchAllList.questionList);
                 })
                 .catch(error => console.error('Error:', error));
-            alert("新增問卷成功")
+            alert("新增问卷成功")
             this.$router.push('/questHome');
-
-
-        }
+        },
+        togglePublishedStatus() {
+            this.published = !this.published;
+        },
     }
 }
 </script>
 
 <template>
-    ///問題arr:{{questArr}}
     <div class="createQuestPageBody">
         <div class="createQuestHeader">
             <div>
-                <h1>新增問卷</h1>
-                <label for="">問卷名稱</label>
-                <input style="width: 90%;" type="text" name="" id="" v-model="this.title">
+                <h1>新增问卷</h1>
+                <button @click="togglePublishedStatus" :style="{ 'background-color': published ? 'red' : 'green' }">
+                    {{ published ? '關閉問卷' : '開啟問卷' }}
+                </button>
+                <div> <label for="">问卷名称</label>
+                    <input style="width: 90%;" type="text" v-model="this.title">
+                </div>
             </div>
+            <div>
+                <label for="">描述內容</label>
+                <input style="width: 90%;" type="text" v-model="this.description">
 
-            <div>
-                <label for="">問卷開始時間</label>
-                <input type="date" name="" id="" v-model="this.startDate" :min="minStartDate">
-                <label for="">問卷結束時間</label>
-                <input type="date" name="" id="" v-model="this.endDate" :min="minStartDate">
             </div>
             <div>
-                <button v-on:click="createNewQuest()">新增問題</button>
-                <button v-on:click="postToDB()" style="background-color: red;">Post to DB</button>
+                <label for="">问卷开始时间</label>
+                <input type="date" v-model="this.startDate" :min="minStartDate">
+                <label for="">问卷结束时间</label>
+                <input type="date" v-model="this.endDate" :min="minStartDate">
+            </div>
+            <div>
+                <button @click="createNewQuest()">新增问题</button>
+                <button @click="postToDB()" style="background-color: red;">Post to DB</button>
             </div>
         </div>
 
         <div class="createQuest" v-for="(quest, questionIndex) in questArr" :key="questionIndex">
-            <label>第{{ questionIndex + 1 }}題</label>
+            <label>第{{ questionIndex + 1 }}题</label>
             <select v-model="quest.questionType">
-                <option v-for="(type, index) in optionsType" :key="index" :value="type">{{ type === 'radio' ? '單選' : type
-                    === 'checkbox' ? '複選' : '簡答' }}</option>
+                <option v-for="(type, index) in questionTypes" :key="index" :value="type">
+                    {{ type === 'radio' ? '单选' : type === 'checkbox' ? '多选' : '简答' }}
+                </option>
             </select>
-            <input type="text" v-model="quest.qTitle" placeholder="輸入題目">
-            <button @click="createNewOptions(questionIndex)">新增選項</button>
+            <input type="text" v-model="quest.question" placeholder="输入问题">
+            <button @click="createNewOptions(questionIndex)">新增选项</button>
 
             <div class="NewOptions" v-for="(option, optionIndex) in quest.options" :key="optionIndex">
-                <input v-if="quest.questionType === 'radio'" type="radio" name="radioGroup"
-                    v-model="quest.options[optionIndex].selected">
-                <input v-if="quest.questionType === 'checkbox'" type="checkbox"
-                    v-model="quest.options[optionIndex].selected">
-                <input type="text" placeholder="輸入選項" v-model="quest.options[optionIndex].text">
+                <input v-if="quest.questionType === 'radio'" type="radio" :name="'radioGroup_' + questionIndex"
+                v-model="quest.options[optionIndex].selected">
+                <input v-if="quest.questionType === 'checkbox'" type="checkbox" 
+                v-model="quest.options[optionIndex].selected">
+                <input type="text" placeholder="輸入選項" v-model="quest.options[optionIndex].text" :disabled="quest.questionType === 'text'">
+
                 <button style="background-color: red;" @click="deleteNewOptions(questionIndex, optionIndex)">刪除選項</button>
             </div>
 
-            <button style="margin-left: 43px; background-color: red;"
-                v-on:click="deleteNewQuest(questionIndex)">刪除問題</button>
+            <button style="margin-left: 43px; background-color: red;" @click="deleteNewQuest(questionIndex)">删除问题</button>
         </div>
     </div>
 </template>
@@ -166,115 +179,115 @@ export default {
 
 <style lang="scss" scoped>
 .createQuestPageBody {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: #2c3e50;
-  padding: 20px;
-  min-height: 90vh;
-
-  .createQuestHeader {
-    width: 900px;
-    color: #ecf0f1;
-    height: auto;
-    border: 1px solid #34495e;
-    border-radius: 10px;
-    padding: 20px;
-    margin: 20px 0;
-    background-color: #2c3e50;
     display: flex;
     flex-direction: column;
     align-items: center;
-   
-    div {
-      width: 100%;
-      margin: 10px 0;
-    }
-
-    label {
-      font-weight: bold;
-      margin-right: 5px;
-      color: #ecf0f1;
-    }
-
-    input[type="text"],
-    input[type="date"] {
-      width: 30%;
-      padding: 10px;
-      border: 1px solid #34495e;
-      border-radius: 5px;
-      margin-bottom: 10px;
-      margin-right: 5px;
-      color: #34495e;
-      background-color: #ecf0f1;
-    }
-
-    input[type="date"] {
-      height: auto;
-    }
-
-    button {
-      background-color: #3498db;
-      color: #fff;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-right: 10px;
-      transition: background-color 0.3s;
-    }
-
-    button+button {
-      margin-left: 10px;
-    }
-
-    button:hover {
-      background-color: #2980b9;
-    }
-  }
-
-  .createQuest {
-    margin-top: 15px;
-    width: 900px;
-    border: 1px solid #34495e;
-    border-radius: 10px;
-    padding: 20px;
     background-color: #2c3e50;
+    padding: 20px;
+    min-height: 90vh;
 
-    label {
-      font-weight: bold;
-      color: #ecf0f1;
+    .createQuestHeader {
+        width: 900px;
+        color: #ecf0f1;
+        height: auto;
+        border: 1px solid #34495e;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+        background-color: #2c3e50;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        div {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        label {
+            font-weight: bold;
+            margin-right: 5px;
+            color: #ecf0f1;
+        }
+
+        input[type="text"],
+        input[type="date"] {
+            width: 30%;
+            padding: 10px;
+            border: 1px solid #34495e;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            margin-right: 5px;
+            color: #34495e;
+            background-color: #ecf0f1;
+        }
+
+        input[type="date"] {
+            height: auto;
+        }
+
+        button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: background-color 0.3s;
+        }
+
+        button+button {
+            margin-left: 10px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
     }
 
-    input[type="text"] {
-      margin-top: 15px;
-      margin-bottom: 15px;
-      width: 80%;
-      padding: 10px;
-      border: 1px solid #34495e;
-      border-radius: 5px;
-      margin-right: 15px;
-      color: #34495e;
-      background-color: #ecf0f1;
-    }
+    .createQuest {
+        margin-top: 15px;
+        width: 900px;
+        border: 1px solid #34495e;
+        border-radius: 10px;
+        padding: 20px;
+        background-color: #2c3e50;
 
-    input[type="radio"] {
-      margin-right: 29px;
-    }
+        label {
+            font-weight: bold;
+            color: #ecf0f1;
+        }
 
-    button {
-      background-color: #3498db;
-      color: #fff;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
+        input[type="text"] {
+            margin-top: 15px;
+            margin-bottom: 15px;
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #34495e;
+            border-radius: 5px;
+            margin-right: 15px;
+            color: #34495e;
+            background-color: #ecf0f1;
+        }
 
-    button:hover {
-      background-color: #2980b9;
+        input[type="radio"] {
+            margin-right: 29px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
     }
-  }
 }
 </style>

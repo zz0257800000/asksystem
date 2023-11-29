@@ -145,8 +145,10 @@ export default {
           <tr v-for="(quest, index) in getPage(currentPage)" :key="index">
             <td>{{ index + 1 }}</td>
             <td>
-              <router-link :to="'/questHome/doQuestPage/' + quest.id">{{ quest.title }}</router-link>
-            </td>
+      <!-- 使用 v-if 來條件渲染連結 -->
+      <router-link v-if="quest.published" :to="'/questHome/doQuestPage/' + quest.id">{{ quest.title }}</router-link>
+      <span v-else>{{ quest.title }}</span>
+    </td>
             <td>{{ quest.published ? '開啟中' : '關閉中' }}</td>
             <td>{{ quest.startDate }}</td>
             <td>{{ quest.endDate }}</td>

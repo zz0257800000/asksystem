@@ -33,6 +33,11 @@ const router = createRouter({
       name: "questHome/showDetailPage",
       component: () => import('../components/quest/showDetailPage.vue'),
     },
+    {
+      path: "/frontQuestPage",
+      name: "frontQuestPage",
+      component: () => import('../components/quest/frontQuestPage.vue'),
+    },
 
   ],
 });

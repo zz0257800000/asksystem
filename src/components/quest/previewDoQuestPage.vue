@@ -2,35 +2,23 @@
 export default {
     data() {
         return {
-            // a: 0,
-            // questArrLocal: JSON.parse(localStorage.getItem("questArrLocal")) || [],
+           
             doquestArr: {
                 userName: '',
                 userPhone: '',
                 userEmail: '',
                 userAge: '',
             },
-            // userResponses: [],
+        
         };
     },
     props: ["checkinfo"],
 
     mounted() {
-        // const questionnaireId = this.$route.params.wantId;
-        // this.loadQuestionnaireData(questionnaireId);
-        // this.chage(questionnaireId);
+      
     },
     methods: {
-        // loadQuestionnaireData(questionnaireId) {
-        //     this.questionnaireData = this.findQuestionnaireDataById(questionnaireId);
-        //     this.questionnaireId = questionnaireId;
-        // },
-        // findQuestionnaireDataById(questionnaireId) {
-        //     return this.questArrLocal.find((quest) => quest.id === questionnaireId);
-        // },
-        // chage(a, questionnaireId) {
-        //     return (this.a = Number(this.questionnaireId));
-        // },
+    
 
         doneQuestPage() {
             const userResponse = {
