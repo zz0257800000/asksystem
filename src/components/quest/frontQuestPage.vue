@@ -121,13 +121,7 @@ export default {
 
         <button class="searchButton" @click="searchParam()">検索</button>
       </div>
-      <div class="searchListDown">
-        <button class="deleteButton" @click="deleteQuestionnaires()">全滅</button>
-
-        <router-link to="/questHome/createQuestPage">
-          <button class="createButton">アンケートの追加</button>
-        </router-link>
-      </div>
+      
     </div>
     <div class="showList">
       <table>

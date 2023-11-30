@@ -38,6 +38,16 @@ const router = createRouter({
       name: "frontQuestPage",
       component: () => import('../components/quest/frontQuestPage.vue'),
     },
+    {
+      path: "/EditQuestionnaire/:wantId",
+      name: "EditQuestionnaire",
+      component: () => import('../components/quest/EditQuestionnaire.vue'),
+    },
+    {
+      path: "/questHome/EditQuestionnaire/:wantId",
+      name: "EditQuestionnaire",
+      component: () => import('../components/quest/EditQuestionnaire.vue'),
+    },
 
   ],
 });

@@ -28,8 +28,6 @@ export default {
   methods: {
     searchParam() {
       const title = this.searchText;
-      const published = this.published;
-
       const startDate = this.searchStartTime;
       const endDate = this.searchEndTime;
 
@@ -51,11 +49,9 @@ export default {
           return response.json();
         })
         .then(data => {
-
           console.log(data);
           this.searchAllList.questionnaire = data.quizVoList.map(item => item.questionnaire);
           this.searchAllList.questionList = data.quizVoList.map(item => item.questionList);
-
         })
         .catch(error => console.error('Error:', error))
         .finally(() => {
@@ -72,47 +68,47 @@ export default {
       return this.searchAllList.questionnaire.slice(startIndex, endIndex);
     },
     deleteQuestionnaire() {
-  if (this.selectedRows.length === 0) {
-    console.warn('No questionnaires selected for deletion.');
-    return;
-  }
-
-  // Call the backend API to delete the selected questionnaires directly from the database
-  fetch(`http://localhost:8080/api/quiz/deleteAll`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(this.selectedRows)  // Pass the selected questionnaire IDs to the backend
-  })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+      if (this.selectedRows.length === 0) {
+        console.warn('No questionnaires selected for deletion.');
+        return;
       }
-      return response.json();
-    })
-    .then(data => {
+
+      // Call the backend API to delete the selected questionnaires directly from the database
+      fetch(`http://localhost:8080/api/quiz/deleteAll`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(this.selectedRows)  // Pass the selected questionnaire IDs to the backend
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
           console.log('Deletion successful:', data);
           // Assuming deletion was successful, update the local data
           this.searchAllList.questionnaire = this.searchAllList.questionnaire.filter(
-            item => this.selectedRows.includes(item.id)  // 使用正确的ID属性
+            item => !this.selectedRows.includes(item.id)  // 使用正确的ID属性
           );
+          this.selectedRows = [];
         })
-    .catch(error => {
-      console.error('Error:', error);
-      // Handle the error (e.g., display an error message to the user)
-    });
-},selectAllRows() {
+        .catch(error => {
+          console.error('Error:', error);
+          // Handle the error (e.g., display an error message to the user)
+        });
+    },
+    selectAllRows() {
       if (this.selectAllCheckbox) {
         // 如果全選框被選中，將所有行的 ID 加入 selectedRows 中
-        this.selectedRows = this.getPage(this.currentPage).map(quest => quest.id);
+        this.selectedRows = this.searchAllList.questionnaire.map(quest => quest.id);
       } else {
         // 如果全選框未被選中，清空 selectedRows
         this.selectedRows = [];
       }
     },
- 
-   
   }
 };
 </script>
@@ -149,11 +145,13 @@ export default {
             <th>開始時間</th>
             <th>終了時間</th>
             <th>統計情報を見る</th>
+            <th>更改問卷
+            </th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(quest, index) in getPage(currentPage)" :key="index">
-            <td>            
+            <td>
 
               <input type="checkbox" v-model="selectedRows" :value="quest.id">
             </td>
@@ -166,6 +164,11 @@ export default {
             <td>{{ quest.endDate }}</td>
             <td>
               <router-link :to="'/questHome/showDetailPage'">統計情報を見る</router-link>
+            </td>
+
+            
+            <td>
+              <router-link :to="'/questHome/EditQuestionnaire/' + quest.id"><i class="fa-solid fa-pencil"></i></router-link>
             </td>
           </tr>
         </tbody>
