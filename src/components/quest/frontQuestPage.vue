@@ -149,7 +149,7 @@ export default {
       <router-link v-if="quest.published" :to="'/questHome/doQuestPage/' + quest.id">{{ quest.title }}</router-link>
       <span v-else>{{ quest.title }}</span>
     </td>
-            <td>{{ quest.published ? '開啟中' : '關閉中' }}</td>
+    <td :style="{ 'color': quest.published ? 'green' : 'red' }">{{ quest.published ? '開啟中' : '關閉中' }}</td>
             <td>{{ quest.startDate }}</td>
             <td>{{ quest.endDate }}</td>
             <td>

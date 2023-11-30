@@ -10,6 +10,8 @@ export default {
       searchStartTime: '',
       searchEndTime: '',
       currentPage: 1,
+      selectedRows: [],
+      selectAllCheckbox: false,
     };
   },
 
@@ -69,41 +71,48 @@ export default {
       const endIndex = startIndex + pageSize;
       return this.searchAllList.questionnaire.slice(startIndex, endIndex);
     },
-    deleteQuestionnaires() {
-      // 削除するアンケートのIDを抽出
-      const questionnaireIds = this.searchAllList.questionnaire.map(item => item.questionnaireId);
+    deleteQuestionnaire() {
+  if (this.selectedRows.length === 0) {
+    console.warn('No questionnaires selected for deletion.');
+    return;
+  }
 
-      if (questionnaireIds.length === 0) {
-        console.error('削除するアンケートのIDが提供されていません。');
-        return;
+  // Call the backend API to delete the selected questionnaires directly from the database
+  fetch(`http://localhost:8080/api/quiz/deleteAll`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(this.selectedRows)  // Pass the selected questionnaire IDs to the backend
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
-      // 実際にバックエンドAPIを呼び出して削除操作を行う
-      questionnaireIds.forEach(questionnaireId => {
-        fetch(`http://localhost:8080/api/questionnaire/${questionnaireId}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+      return response.json();
+    })
+    .then(data => {
+          console.log('Deletion successful:', data);
+          // Assuming deletion was successful, update the local data
+          this.searchAllList.questionnaire = this.searchAllList.questionnaire.filter(
+            item => this.selectedRows.includes(item.id)  // 使用正确的ID属性
+          );
         })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-          })
-          .then(data => {
-            console.log('削除成功:', data);
-          })
-          .catch(error => {
-            console.error('エラー:', error);
-            // エラーを処理する（例: ユーザーにエラーメッセージを表示する）
-          });
-      });
-
-      // 削除が成功したと仮定して、ローカルデータを更新する（オプション、実際の要件に応じて）
-      this.searchAllList.questionnaire = this.searchAllList.questionnaire.filter(item => !questionnaireIds.includes(item.questionnaireId));
-    }
+    .catch(error => {
+      console.error('Error:', error);
+      // Handle the error (e.g., display an error message to the user)
+    });
+},selectAllRows() {
+      if (this.selectAllCheckbox) {
+        // 如果全選框被選中，將所有行的 ID 加入 selectedRows 中
+        this.selectedRows = this.getPage(this.currentPage).map(quest => quest.id);
+      } else {
+        // 如果全選框未被選中，清空 selectedRows
+        this.selectedRows = [];
+      }
+    },
+ 
+   
   }
 };
 </script>
@@ -122,8 +131,7 @@ export default {
         <button class="searchButton" @click="searchParam()">検索</button>
       </div>
       <div class="searchListDown">
-        <button class="deleteButton" @click="deleteQuestionnaires()">全滅</button>
-
+        <button class="deleteButton" @click="deleteQuestionnaire">刪除選定</button>
         <router-link to="/questHome/createQuestPage">
           <button class="createButton">アンケートの追加</button>
         </router-link>
@@ -133,6 +141,8 @@ export default {
       <table>
         <thead>
           <tr>
+            <th>
+            </th>
             <th>＃</th>
             <th>アンケート</th>
             <th>ステータス</th>
@@ -143,11 +153,15 @@ export default {
         </thead>
         <tbody>
           <tr v-for="(quest, index) in getPage(currentPage)" :key="index">
+            <td>            
+
+              <input type="checkbox" v-model="selectedRows" :value="quest.id">
+            </td>
             <td>{{ index + 1 }}</td>
             <td>
               <router-link :to="'/questHome/doQuestPage/' + quest.id">{{ quest.title }}</router-link>
             </td>
-            <td>{{ quest.published ? '開啟中' : '關閉中' }}</td>
+            <td :style="{ 'color': quest.published ? 'green' : 'red' }">{{ quest.published ? '開啟中' : '關閉中' }}</td>
             <td>{{ quest.startDate }}</td>
             <td>{{ quest.endDate }}</td>
             <td>
