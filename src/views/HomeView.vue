@@ -36,7 +36,7 @@ export default {
   align-items: center;
   justify-content: space-between;
   height: 100vh;
-  background-color: #0e0e0e;
+  background: linear-gradient(45deg, #001a33, rgb(87, 87, 87));
   color: #ffffff;
   font-family: 'Arial', sans-serif;
 }

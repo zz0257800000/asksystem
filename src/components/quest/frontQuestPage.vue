@@ -138,7 +138,7 @@ export default {
             <th>ステータス</th>
             <th>開始時間</th>
             <th>終了時間</th>
-            <th>統計情報を見る</th>
+            <th>填寫問卷</th>
           </tr>
         </thead>
         <tbody>
@@ -146,14 +146,16 @@ export default {
             <td>{{ index + 1 }}</td>
             <td>
       <!-- 使用 v-if 來條件渲染連結 -->
-      <router-link v-if="quest.published" :to="'/questHome/doQuestPage/' + quest.id">{{ quest.title }}</router-link>
+      <span  v-if="quest.published" :to="'/questHome/doQuestPage/' + quest.id">{{ quest.title }}</span>
+
       <span v-else>{{ quest.title }}</span>
     </td>
     <td :style="{ 'color': quest.published ? 'green' : 'red' }">{{ quest.published ? '開啟中' : '關閉中' }}</td>
             <td>{{ quest.startDate }}</td>
             <td>{{ quest.endDate }}</td>
             <td>
-              <router-link :to="'/questHome/showDetailPage'">統計情報を見る</router-link>
+              <router-link v-if="quest.published" :to="'/questHome/doQuestPage/' + quest.id"><i class="fa-regular fa-pen-to-square"></i></router-link>
+
             </td>
           </tr>
         </tbody>
