@@ -5,7 +5,9 @@ export default {
     data() {
         return {
             searchAllList: {
-                questionnaire: {},
+                questionnaire: [],
+                questionList: [],
+
             },
             qtitle: '',
             description: '',
@@ -15,6 +17,8 @@ export default {
             questionTypes: ['radio', 'checkbox', 'text'],
             published: false,
             minStartDate: '', // Add minStartDate if it's your data
+            questionList: [],  // 確保有 questionList 這個屬性
+
         };
     },
     methods: {
@@ -29,7 +33,7 @@ export default {
                 .then((response) => response.json())
                 .then((data) => {
                     console.log('Data updated successfully:', data);
-
+        
                     const quizData = data.quizVoList.find(
                         (quiz) => quiz.questionnaire.id === parseInt(questionnaireIdToFind)
                     );
@@ -40,47 +44,26 @@ export default {
                         this.startDate = quizData.questionnaire.startDate;
                         this.endDate = quizData.questionnaire.endDate;
                         this.questArr = quizData.questionList;
-                        // 用问题数组初始化 questArr
-                    // 检查 questionList 是否为数组
-        if (Array.isArray(quizData.questionList)) {
-          // 将获取到的问题数据设置到 questArr
-          this.questArr = quizData.questionList.map((question) => ({
-            ...question,
-            options: Array.isArray(question.options) ? question.options : [],
-          }));
-        } else {
-          console.error('questionList 不是数组。', quizData.questionList);
-        }
-      } else {
-        console.error('アンケートデータが見つかりませんでした。アンケートID: ', questionnaireIdToFind);
-      }
-    })
-    .catch((error) => console.error('エラー:', error));
-},
-        saveDataToBackend() {
-            const updatedData = {
-                questionnaireId: this.searchAllList.questionnaire.id,
-                title: this.title,
-                description: this.description,
-                startDate: this.startDate,
-                endDate: this.endDate,
-                questionList: this.questArr,
-            };
 
-            fetch('http://localhost:8080/api/quiz/update', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(updatedData),
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    console.log('Data updated successfully:', data);
-                    // Handle any additional actions or notifications upon successful update
+                        // 用问题数组初始化 questArr
+                        // 检查 questionList 是否为数组
+                        if (Array.isArray(quizData.questionList)) {
+                            // 将获取到的问题数据设置到 questArr
+                            this.questArr = quizData.questionList.map((question) => ({
+                                ...question,
+                                options: Array.isArray(question.options) ? question.options : [],
+                            }));
+                            console.log(this.questArr)
+                        } else {
+                            console.error('questionList 不是数组。', quizData.questionList);
+                        }
+                    } else {
+                        console.error('アンケートデータが見つかりませんでした。アンケートID: ', questionnaireIdToFind);
+                    }
                 })
-                .catch((error) => console.error('Error updating data:', error));
+                .catch((error) => console.error('エラー:', error));
         },
+      
         createNewQuest() {
             if (this.questArr.length >= 10) {
                 alert('最多只能添加十个问题。');
@@ -104,11 +87,9 @@ export default {
                 alert('每个问题最多只能添加四个选项。');
                 return;
             }
-
             const newOption = {
                 text: '',
                 selected: true,
-
             };
 
             this.questArr[questionIndex].options.push(newOption);
@@ -125,7 +106,90 @@ export default {
         },
         togglePublishedStatus() {
             this.published = !this.published;
-        },
+        },   postUpdateDataToDbAndPublished() {
+            this.questArr.forEach((quest, questionIndex) => {
+                const optionTextArray = quest.options.map(option => option.text);
+                this.questArr[questionIndex].optionText = optionTextArray.join(';');
+            });
+
+            console.log("Updated questArr Data:", this.questArr); // 確認更新後的 questArr 資料
+
+
+           
+          // 初始化 questArr
+this.questArr = [];
+
+// 使用 for 迴圈處理每個問題
+for (let i = 0; i < quizData.questionList.length; i++) {
+    const questItem = quizData.questionList[i];
+    const optionsArray = questItem.option ? questItem.option.split(',') : [];
+
+    // 使用 map 初始化 optionsArray
+    const options = optionsArray.map(optionText => ({
+        selected: false, // 或者根據需要初始化為 true
+        text: optionText,
+    }));
+
+    // 在 questArr 中添加新問題
+    const newQuestion = {
+        quId: i + 1,
+        questionnaireId: this.$route.params.updateQuestPageId,
+        optionsType: questItem.questionTypes,
+        qTitle: questItem.questionText,
+        options: options,
+    };
+
+    // 添加新問題到 questArr
+    this.questArr.push(newQuestion);
+}
+
+// 將 questArr 資料複製到 questionList
+this.questionList = this.questArr.map((quest, index) => ({
+    quId: index + 1,
+    questionnaireId: quest.questionnaireId,
+    optionsType: quest.optionsType,
+    qTitle: quest.qTitle,
+    options: [...quest.options], // 複製 options 陣列
+}));
+
+         
+            console.log(this.questArr.map(quest => quest.options));
+
+            console.log("Final questionList Data:", this.questionList);
+            var newQuestionnaire = {
+                hwQuestionnaire: {
+                    questionnaireId: this.$route.params.updateQuestPageId,
+                    title: this.title,
+                    description: this.description,
+                    startDate: this.startDate,
+                    endDate: this.endDate,
+                    published: 1,
+                },
+                questionList: this.questionList,
+            };
+            console.log(newQuestionnaire)
+
+            fetch('http://localhost:8080/api/quiz/createOrUpdate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newQuestionnaire)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+                })
+                .catch(error => console.error('Error:', error));
+            alert("更新問卷成功")
+        },togglePublishedStatus() {
+      this.published = !this.published;
+    },
     },
     mounted() {
         this.fetchData();
@@ -158,42 +222,34 @@ export default {
             </div>
             <div>
                 <button @click="createNewQuest()">新增问题</button>
-                <button @click="saveDataToBackend()" style="background-color: red;">Update to DB</button>
+                <button @click="postUpdateDataToDbAndPublished()" style="background-color: red;">Update to DB</button>
             </div>
         </div>
 
         <div>
             <div class="editQuest" v-for="(quest, questionIndex) in questArr" :key="questionIndex">
                 <label>第{{ questionIndex + 1 }}题</label>
-                <select v-model="quest.questionType">
+                <select v-model="quest.optionsType">
                     <option v-for="(type, index) in questionTypes" :key="index" :value="type">
                         {{ type === 'radio' ? '单选' : type === 'checkbox' ? '多选' : '简答' }}
                     </option>
                 </select>
 
-                <input type="text" v-model="quest.question" placeholder="输入问题">
+                <input type="text" v-model="quest.qTitle" placeholder="输入问题">
 
                 <button @click="createNewOptions(questionIndex)">新增选项</button>
 
+                {{quest. options}}
                 <div class="NewOptions" v-for="(option, optionIndex) in quest.options" :key="optionIndex">
                     <input v-if="quest.questionType === 'radio'" type="radio" :name="'radioGroup_' + questionIndex"
-                        v-model="option.selected" />
-                    <input v-if="quest.questionType === 'checkbox'" type="checkbox" v-model="option.selected" />
-                    <input type="text" placeholder="輸入選項" v-model="option.text" :disabled="quest.questionType === 'text'" />
+                        v-model="quest.options[optionIndex].selected"/>
+                    <input v-if="quest.questionType === 'checkbox'" type="checkbox" v-model="quest.options[optionIndex].selected" />
+                    <input type="text" placeholder="輸入選項" v-model="quest.options[optionIndex].text"  />
                     <button style="background-color: red;"
                         @click="deleteNewOptions(questionIndex, optionIndex)">刪除選項</button>
                 </div>
 
-                <!-- 显示用户回答 -->
-                <div>
-
-                    <div v-if="quest.questionType === 'text'">{{ quest.answer }}</div>
-                    <div v-else>
-                        <span v-for="(option, optionIndex) in quest.options" :key="optionIndex">
-                            <span v-if="option.selected">{{ option.text }} </span>
-                        </span>
-                    </div>
-                </div>
+                
 
                 <button style="margin-left: 43px; background-color: red;" @click="deleteNewQuest(questionIndex)">
                     删除问题
