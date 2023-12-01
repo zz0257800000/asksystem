@@ -163,7 +163,7 @@ export default {
             <td>{{ quest.startDate }}</td>
             <td>{{ quest.endDate }}</td>
             <td>
-              <router-link :to="'/questHome/showDetailPage'">統計情報を見る</router-link>
+              <router-link :to="'/showDetailPage/' + quest.id">統計情報を見る</router-link>
             </td>
 
             

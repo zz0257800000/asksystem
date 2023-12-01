@@ -28,11 +28,7 @@ const router = createRouter({
       component: () => import('../components/quest/doQuestPage.vue'),
     },
 
-    {
-      path: "/questHome/showDetailPage",
-      name: "questHome/showDetailPage",
-      component: () => import('../components/quest/showDetailPage.vue'),
-    },
+   
     {
       path: "/frontQuestPage",
       name: "frontQuestPage",
@@ -47,6 +43,12 @@ const router = createRouter({
       path: "/questHome/EditQuestionnaire/:wantId",
       name: "EditQuestionnaire",
       component: () => import('../components/quest/EditQuestionnaire.vue'),
+      
+    },
+    {
+      path: "/showDetailPage/:id",
+      name: "showDetailPage",
+      component: () => import("../components/quest/showDetailPage copy.vue"),
     },
 
   ],
