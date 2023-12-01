@@ -18,6 +18,7 @@ export default {
             published: false,
             minStartDate: '', // Add minStartDate if it's your data
             questionList: [],  // 確保有 questionList 這個屬性
+            
 
         };
     },
@@ -33,7 +34,7 @@ export default {
                 .then((response) => response.json())
                 .then((data) => {
                     console.log('Data updated successfully:', data);
-        
+
                     const quizData = data.quizVoList.find(
                         (quiz) => quiz.questionnaire.id === parseInt(questionnaireIdToFind)
                     );
@@ -51,9 +52,11 @@ export default {
                             // 将获取到的问题数据设置到 questArr
                             this.questArr = quizData.questionList.map((question) => ({
                                 ...question,
-                                options: Array.isArray(question.options) ? question.options : [],
+                                options: question.optionsType === 'text' ? [] : question.options.split(';').map(text => ({ selected: false, text })),
                             }));
                             console.log(this.questArr)
+
+
                         } else {
                             console.error('questionList 不是数组。', quizData.questionList);
                         }
@@ -70,7 +73,7 @@ export default {
                 return;
             }
             const newQuestion = {
-                questionType: 'radio', // 設置默認的問題類型
+                questionType: '', // 設置默認的問題類型
                 question: '',
                 options: [],
             };
@@ -118,11 +121,16 @@ export default {
            
           // 初始化 questArr
 this.questArr = [];
-
+const quizData = response.data; // 这里假设后端返回的数据包含问卷的所有信息
+                // 将问卷数据填充到编辑相关的变量中
+                this.editingQuizId = parsedQuizId;
+                // 填充其他问卷数据...
+                console.log("quizData: ",quizData);
+                console.log("quizId: ",this.editingQuizId );
 // 使用 for 迴圈處理每個問題
 for (let i = 0; i < quizData.questionList.length; i++) {
     const questItem = quizData.questionList[i];
-    const optionsArray = questItem.option ? questItem.option.split(',') : [];
+    const optionsArray = questItem.option ? questItem.option.split(';') : [];
 
     // 使用 map 初始化 optionsArray
     const options = optionsArray.map(optionText => ({
@@ -141,6 +149,7 @@ for (let i = 0; i < quizData.questionList.length; i++) {
 
     // 添加新問題到 questArr
     this.questArr.push(newQuestion);
+    
 }
 
 // 將 questArr 資料複製到 questionList
@@ -239,15 +248,15 @@ this.questionList = this.questArr.map((quest, index) => ({
 
                 <button @click="createNewOptions(questionIndex)">新增选项</button>
 
-                {{quest. options}}
-                <div class="NewOptions" v-for="(option, optionIndex) in quest.options" :key="optionIndex">
-                    <input v-if="quest.questionType === 'radio'" type="radio" :name="'radioGroup_' + questionIndex"
-                        v-model="quest.options[optionIndex].selected"/>
-                    <input v-if="quest.questionType === 'checkbox'" type="checkbox" v-model="quest.options[optionIndex].selected" />
-                    <input type="text" placeholder="輸入選項" v-model="quest.options[optionIndex].text"  />
-                    <button style="background-color: red;"
-                        @click="deleteNewOptions(questionIndex, optionIndex)">刪除選項</button>
-                </div>
+                <div v-for="(option, optionIndex) in quest.options" :key="optionIndex">
+  <input v-if="quest.optionsType === 'radio'" type="radio" :name="'radioGroup_' + questionIndex"
+         v-model="option.selected"/>
+  <input v-if="quest.optionsType === 'checkbox'" type="checkbox" v-model="option.selected" />
+
+  <input type="text" placeholder="輸入選項" v-model="option.text" />
+  
+  <button style="background-color: red;" @click="deleteNewOptions(questionIndex, optionIndex)">刪除選項</button>
+</div>
 
                 
 
