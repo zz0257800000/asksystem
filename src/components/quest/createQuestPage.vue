@@ -13,6 +13,22 @@ export default {
       description: '',
       published: true, // Initialize published as false
       questionTypes: ['radio', 'checkbox', 'text'],
+      questionnaire:{
+                title:'',
+                description:'',
+                published:false,
+                startDate:'',
+                endDate:'',
+            },
+            questionList:[
+                {
+                quid:1,
+                qTitle:'',
+                optionType:'',
+                necessary:false,
+                options:''
+                },
+            ]
     };
   },
   computed: {
@@ -30,6 +46,8 @@ export default {
         return;
       }
       const newQuestion = {
+        quid: this.questArr.length + 1,  // 使用题目的索引作为 quid
+
         questionType: 'radio', // 設置默認的問題類型
         question: '',
         options: [],
@@ -41,10 +59,10 @@ export default {
       if (this.questArr[questionIndex].options.length >= 4) {
         alert('每个问题最多只能添加四个选项。');
         return;
-      }
+      } 
       const newOption = {
         text: '',
-        selected: true,
+        selected: false,
       };
       this.questArr[questionIndex].options.push(newOption);
     },
@@ -65,15 +83,23 @@ export default {
       if (!this.title || !this.startDate || !this.endDate) {
         alert('请填写所有必填项');
         return;
-      }
+      }// 檢查時間
+      const startDateTime = new Date(this.startTime);
+            const endDateTime = new Date(this.endTime);
+
+            if (endDateTime <= startDateTime) {
+                alert('結束時間不能早於或等於開始時間。');
+                return;
+            }
 
       // 清空questionList
       this.searchAllList.questionList = [];
 
       // 将questArr转换为questionList格式
-      this.questArr.forEach((quest, quid) => {
+      this.questArr.forEach((quest, id) => {
         const questionData = {
-          quid: quid + 1,
+          // quid: this.questArr.length + 1,  // 使用题目的索引作为 quid
+          quId: id+1,  // 使用题目的索引作为 quid
           qTitle: quest.question,
           optionsType: quest.questionType,
           necessary: false,
@@ -93,6 +119,7 @@ export default {
         },
         questionList: this.searchAllList.questionList,
       };
+      console.log(this.searchAllList.questionList)
 
       fetch('http://localhost:8080/api/quiz/create', {
         method: 'POST',
@@ -167,12 +194,13 @@ export default {
 
         <!-- Display Options -->
         <div class="NewOptions" v-for="(option, optionIndex) in quest.options" :key="optionIndex">
-          <input v-if="quest.questionType === 'radio'" type="radio" :name="'radioGroup_' + questionIndex"
-            v-model="option.selected">
-          <input v-if="quest.questionType === 'checkbox'" type="checkbox" v-model="option.selected">
-          <input type="text" placeholder="輸入選項" v-model="option.text" :disabled="quest.questionType === 'text'">
-          <button style="background-color: red;" @click="deleteNewOptions(questionIndex, optionIndex)">刪除選項</button>
-        </div>
+                <input v-if="quest.questionType === 'radio'" type="radio" name="radioGroup"
+                    v-model="quest.options[optionIndex].selected">
+                <input v-if="quest.questionType === 'checkbox'" type="checkbox"
+                    v-model="quest.options[optionIndex].selected">
+                <input type="text" placeholder="輸入選項" v-model="quest.options[optionIndex].text">
+                <button style="background-color: red;" @click="deleteNewOptions(questionIndex, optionIndex)">刪除選項</button>
+            </div>
 
         <!-- Button to Delete Question -->
         <button style="margin-left: 43px; background-color: red;" @click="deleteNewQuest(questionIndex)">删除问题</button>

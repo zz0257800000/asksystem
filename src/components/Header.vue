@@ -16,10 +16,10 @@ export default {
 </script>
 <template>
     <nav class="topNav">
-        <RouterLink to="/frontQuestPage">前台</RouterLink>
+        <RouterLink class="f1a" to="/frontQuestPage">前台</RouterLink>
 
-        <RouterLink to="/">合成獸全面進化!!!</RouterLink>
-        <RouterLink to="/questHome">後台</RouterLink>
+        <RouterLink class="a" to="/">合成獸全面進化!!!</RouterLink>
+        <RouterLink class="f2a" to="/questHome">後台</RouterLink>
 
     </nav>
 
@@ -33,9 +33,17 @@ export default {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    a {
+    .f1a {
+        text-decoration: none;
+        color: rgb(255, 255, 255);
+    }
+    .f2a {
         text-decoration: none;
         color: rgb(255, 0, 0);
+    }
+    .a {
+        text-decoration: none;
+        color: rgb(0, 119, 255);
     }
 }
 </style>
