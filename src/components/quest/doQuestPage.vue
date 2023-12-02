@@ -1,24 +1,23 @@
 <script>
 export default {
-  props: {
-    checkinfo: Object,
-  },
+  
   data() {
     return {
       searchAllList: {
         questionnaire: [],
         questionList: [],
       },
-      doquestArr: {
-        userName: '',
-        userPhone: '',
-        userEmail: '',
-        userAge: '',
-      },
+    
       userResponses: [],
       page: 1,
+      questArr: [], // 你的初始化数据
+      doquestArr: [], //現在更改為陣列
     };
   },
+  created() {
+    this.questArr = []; // 你的初始化数据
+    // ... 其他初始化逻辑
+},
   mounted() {
     this.getQuizInfo();
   },
@@ -49,10 +48,103 @@ export default {
           }
         })
         .catch((error) => console.error('Error:', error));
-    },
-    goToPreviewPage() {
-      // Implement this method if needed
-    },
+    },  
+    processSelectedOptions() {
+            const selectedOptions = [];
+
+            for (const key in this.checkinfo) {
+                if (this.checkinfo[key]) {
+                    const [questionId, index] = key.split('_');
+                    const optionText = this.searchAllList.questionList.find(item => item.questionId == questionId)?.optionText;
+
+                    selectedOptions.push({
+                        questionId,
+                        optionIndex: parseInt(index),
+                        optionValue: this.checkinfo[key],
+                        optionTextSplit: optionText ? optionText.split(';') : []
+                    });
+                }
+            }
+
+            const sortedOptions = {};
+
+            // 將選項按照 questionId 分類
+            for (const option of selectedOptions) {
+                if (!sortedOptions[option.questionId]) {
+                    sortedOptions[option.questionId] = [];
+                }
+                sortedOptions[option.questionId].push(option);
+            }
+
+            let ans = ""; // 用來儲存所有答案
+
+            // 將分類後的選項按要求處理並整合到 ans 中
+            for (const questionId in sortedOptions) {
+                if (["name", "phoneNumber", "email"].includes(questionId)) {
+                    continue; // 排除基本資料
+                }
+
+                const options = sortedOptions[questionId];
+
+                options.sort((a, b) => a.optionIndex - b.optionIndex);
+
+                const answers = options.map(option => {
+                    if (isNaN(option.optionIndex)) {
+                        return option.optionValue;
+                    } else {
+                        return option.optionTextSplit[option.optionIndex];
+                    }
+                });
+
+                ans += answers.join(';') + ';'; // 以分號結尾
+            }
+
+            // 去除最後一個分號
+            if (ans.endsWith(';')) {
+                ans = ans.slice(0, -1);
+            }
+
+            console.log(`Answer: ${ans}`);
+            this.hi = ans;
+            console.log(this.hi);
+        },
+
+    async confirmAnswers() {
+    try {
+      this.processSelectedOptions();
+            const userResponse = {
+              userList: {
+                    //加入變數在此!!
+                    questionnaireId: this.$route.params.wantId,
+                    phoneNumber: this.phoneNumber,
+                    name: this.name,
+                    email: this.email,
+                    age: this.age,
+                    ans: this.hi
+                },
+            };
+      const response = await fetch('http://localhost:8080/api/quiz/usercreate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userResponse)
+      });
+
+      // Handle the response as needed
+      if (response.ok) {
+        // Handle success
+        console.log('Answers submitted successfully');
+      } else {
+        // Handle error
+        console.error('Failed to submit answers');
+      }
+    } catch (error) {
+      // Handle network or other errors
+      console.error('Error submitting answers:', error);
+    }
+  },
+   
   },
 };
 </script>
@@ -66,31 +158,52 @@ export default {
     </div>
     <div class="backToFix" v-if="page === 1">
       <div class="fixedQuest">
-        <div v-for="(value, key) in doquestArr" :key="key">
-          <label>{{ key }}</label>
-          <input v-model="doquestArr[key]" type="text">
-        </div>
+        <div>
+      <label for="name">Name</label>
+      <input v-model="doquestArr.name" type="text" id="name">
+    </div>
+    <div>
+      <label for="phoneNumder">PhoneNumber</label>
+      <input v-model="doquestArr.phoneNumder" type="text" id="phoneNumder">
+    </div>
+    <div>
+      <label for="email">Email</label>
+      <input v-model="doquestArr.email" type="text" id="email">
+    </div>
+ 
+    
       </div>
       <div class="fluidQuest">
         <div v-for="(question, questionIndex) in searchAllList.questionList" :key="questionIndex">
           <label>問題 {{ questionIndex + 1 }}: {{ question.qTitle }}</label>
-          <div v-if="question.optionsType === 'radio' || question.optionsType === 'checkbox'">
-            <div v-for="(option, optionIndex) in question.options.split(';')" :key="optionIndex">
-              <input
-                :type="question.optionsType"
-                :id="'q_' + questionIndex + '_o_' + optionIndex"
-                :value="option"
-                v-model="question.userResponse"
-              />
-              <label :for="'q_' + questionIndex + '_o_' + optionIndex">{{ option }}</label>
-            </div>
-          </div>
-          <div v-else-if="question.optionsType === 'text'">
-            <input v-model="question.userResponse" type="text" />
-          </div>
-        </div>
-        <button @click="goToPreviewPage">預覽填寫結果</button>
-      </div>
+
+
+          <div v-if="question.optionsType === 'radio'">
+  <div v-for="(option, optionIndex) in question.options.split(';')" :key="optionIndex">
+    <input
+      type="radio"
+      :id="'q_' + questionIndex + '_o_' + optionIndex"
+      :value="option"
+      v-model="question.userResponse"
+    />
+    <label :for="'q_' + questionIndex + '_o_' + optionIndex">{{ option }}</label>
+  </div>
+</div>
+
+<!-- 多选部分 -->
+<div v-else-if="question.optionsType === 'checkbox'">
+  <div v-for="(option, optionIndex) in question.options.split(';')" :key="optionIndex">
+    <input
+      type="checkbox"
+      :id="'q_' + questionIndex + '_o_' + optionIndex"
+      :value="option"
+      v-model="question.userResponse"
+    />
+    <label :for="'q_' + questionIndex + '_o_' + optionIndex">{{ option }}</label>
+  </div>
+</div> </div> </div>
+      <button @click="confirmAnswers">確認送出</button>
+
     </div>
   </div>
 </template>

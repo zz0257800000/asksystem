@@ -18,7 +18,7 @@ export default {
             published: false,
             minStartDate: '', // Add minStartDate if it's your data
             questionList: [],  // 確保有 questionList 這個屬性
-            
+
 
         };
     },
@@ -66,7 +66,7 @@ export default {
                 })
                 .catch((error) => console.error('エラー:', error));
         },
-      
+
         createNewQuest() {
             if (this.questArr.length >= 10) {
                 alert('最多只能添加十个问题。');
@@ -109,7 +109,7 @@ export default {
         },
         togglePublishedStatus() {
             this.published = !this.published;
-        },   postUpdateDataToDbAndPublished() {
+        }, postUpdateDataToDbAndPublished() {
             this.questArr.forEach((quest, questionIndex) => {
                 const optionTextArray = quest.options.map(option => option.text);
                 this.questArr[questionIndex].optionText = optionTextArray.join(';');
@@ -118,50 +118,50 @@ export default {
             console.log("Updated questArr Data:", this.questArr); // 確認更新後的 questArr 資料
 
 
-           
-          // 初始化 questArr
-this.questArr = [];
-const quizData = response.data; // 这里假设后端返回的数据包含问卷的所有信息
-                // 将问卷数据填充到编辑相关的变量中
-                this.editingQuizId = parsedQuizId;
-                // 填充其他问卷数据...
-                console.log("quizData: ",quizData);
-                console.log("quizId: ",this.editingQuizId );
-// 使用 for 迴圈處理每個問題
-for (let i = 0; i < quizData.questionList.length; i++) {
-    const questItem = quizData.questionList[i];
-    const optionsArray = questItem.option ? questItem.option.split(';') : [];
 
-    // 使用 map 初始化 optionsArray
-    const options = optionsArray.map(optionText => ({
-        selected: false, // 或者根據需要初始化為 true
-        text: optionText,
-    }));
+            // 初始化 questArr
+            this.questArr = [];
+            const quizData = response.data; // 这里假设后端返回的数据包含问卷的所有信息
+            // 将问卷数据填充到编辑相关的变量中
+            this.editingQuizId = parsedQuizId;
+            // 填充其他问卷数据...
+            console.log("quizData: ", quizData);
+            console.log("quizId: ", this.editingQuizId);
+            // 使用 for 迴圈處理每個問題
+            for (let i = 0; i < quizData.questionList.length; i++) {
+                const questItem = quizData.questionList[i];
+                const optionsArray = questItem.option ? questItem.option.split(';') : [];
 
-    // 在 questArr 中添加新問題
-    const newQuestion = {
-        quId: i + 1,
-        questionnaireId: this.$route.params.updateQuestPageId,
-        optionsType: questItem.questionTypes,
-        qTitle: questItem.questionText,
-        options: options,
-    };
+                // 使用 map 初始化 optionsArray
+                const options = optionsArray.map(optionText => ({
+                    selected: false, // 或者根據需要初始化為 true
+                    text: optionText,
+                }));
 
-    // 添加新問題到 questArr
-    this.questArr.push(newQuestion);
-    
-}
+                // 在 questArr 中添加新問題
+                const newQuestion = {
+                    quId: i + 1,
+                    questionnaireId: this.$route.params.updateQuestPageId,
+                    optionsType: questItem.questionTypes,
+                    qTitle: questItem.questionText,
+                    options: options,
+                };
 
-// 將 questArr 資料複製到 questionList
-this.questionList = this.questArr.map((quest, index) => ({
-    quId: index + 1,
-    questionnaireId: quest.questionnaireId,
-    optionsType: quest.optionsType,
-    qTitle: quest.qTitle,
-    options: [...quest.options], // 複製 options 陣列
-}));
+                // 添加新問題到 questArr
+                this.questArr.push(newQuestion);
 
-         
+            }
+
+            // 將 questArr 資料複製到 questionList
+            this.questionList = this.questArr.map((quest, index) => ({
+                quId: index + 1,
+                questionnaireId: quest.questionnaireId,
+                optionsType: quest.optionsType,
+                qTitle: quest.qTitle,
+                options: [...quest.options], // 複製 options 陣列
+            }));
+
+
             console.log(this.questArr.map(quest => quest.options));
 
             console.log("Final questionList Data:", this.questionList);
@@ -196,9 +196,9 @@ this.questionList = this.questArr.map((quest, index) => ({
                 })
                 .catch(error => console.error('Error:', error));
             alert("更新問卷成功")
-        },togglePublishedStatus() {
-      this.published = !this.published;
-    },
+        }, togglePublishedStatus() {
+            this.published = !this.published;
+        },
     },
     mounted() {
         this.fetchData();
@@ -249,16 +249,17 @@ this.questionList = this.questArr.map((quest, index) => ({
                 <button @click="createNewOptions(questionIndex)">新增选项</button>
 
                 <div v-for="(option, optionIndex) in quest.options" :key="optionIndex">
-  <input v-if="quest.optionsType === 'radio'" type="radio" :name="'radioGroup_' + questionIndex"
-         v-model="option.selected"/>
-  <input v-if="quest.optionsType === 'checkbox'" type="checkbox" v-model="option.selected" />
+                    <input v-if="quest.optionsType === 'radio'" type="radio" :name="'radioGroup_' + questionIndex"
+                        v-model="option.selected" />
+                    <input v-if="quest.optionsType === 'checkbox'" type="checkbox" v-model="option.selected" />
 
-  <input type="text" placeholder="輸入選項" v-model="option.text" />
-  
-  <button style="background-color: red;" @click="deleteNewOptions(questionIndex, optionIndex)">刪除選項</button>
-</div>
+                    <input type="text" placeholder="輸入選項" v-model="option.text" />
 
-                
+                    <button style="background-color: red;"
+                        @click="deleteNewOptions(questionIndex, optionIndex)">刪除選項</button>
+                </div>
+
+
 
                 <button style="margin-left: 43px; background-color: red;" @click="deleteNewQuest(questionIndex)">
                     删除问题
