@@ -171,7 +171,7 @@ export default {
       </div>
       <div>
         <button @click="createNewQuest()">新增问题</button>
-        <button @click="postToDB()" style="background-color: red;">Post to DB</button>
+        <button @click="postToDB()" style="background-color: rgb(128, 179, 255);">Post to DB</button>
       </div>
     </div>
 
@@ -199,11 +199,11 @@ export default {
                 <input v-if="quest.questionType === 'checkbox'" type="checkbox"
                     v-model="quest.options[optionIndex].selected">
                 <input type="text" placeholder="輸入選項" v-model="quest.options[optionIndex].text">
-                <button style="background-color: red;" @click="deleteNewOptions(questionIndex, optionIndex)">刪除選項</button>
+                <button style="background-color: rgb(145, 145, 145);" @click="deleteNewOptions(questionIndex, optionIndex)">刪除選項</button>
             </div>
 
         <!-- Button to Delete Question -->
-        <button style="margin-left: 43px; background-color: red;" @click="deleteNewQuest(questionIndex)">删除问题</button>
+        <button style="margin-left: 43px; background-color: rgb(77, 77, 77);" @click="deleteNewQuest(questionIndex)">删除问题</button>
       </div>
     </div>
   </div>

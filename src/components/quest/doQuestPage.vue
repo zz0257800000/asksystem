@@ -1,4 +1,5 @@
 <script>
+
 export default {
 
   data() {
@@ -18,13 +19,18 @@ export default {
   },
   created() {
     if (this.searchAllList.questionList) {
-      this.checkinfo = {};
-      for (const question of this.searchAllList.questionList) {
-        if (question.questionType === 'text') {
-          this.$set(this.checkinfo, question.questionId, '');
+    this.checkinfo = {};
+    for (const question of this.searchAllList.questionList) {
+      if (question.questionType === 'text') {
+        this.$set(this.checkinfo, question.questionId, '');
+      } else if (question.optionsType === 'radio' || question.optionsType === 'checkbox') {
+        for (let i = 0; i < question.options.split(';').length; i++) {
+          const key = question.questionId + '_' + i;
+          this.$set(this.checkinfo, key, ''); // 初始化为空字符串
         }
       }
     }
+  }
   },
   mounted() {
     
@@ -32,7 +38,7 @@ export default {
 
   },
   methods: {
-    getQuizInfo() {
+  getQuizInfo() {
       const questionnaireIdToFind = this.$route.params.wantId;
       this.checkinfo = {};
       if (this.searchAllList.questionList) {
@@ -77,7 +83,7 @@ export default {
         .catch((error) => console.error('Error:', error));
     },
     // 在 processSelectedOptions 方法中
-    processSelectedOptions() {
+ processSelectedOptions() {
       const selectedOptions = [];
 
       for (const key in this.checkinfo) {
@@ -135,7 +141,6 @@ export default {
 
       console.log(`Answer: ${ans}`);
       this.hi = ans;
-      console.log(this.hi);
     },
     // 新增一个方法用于检查是否为文本类型问题
     isTextQuestion(questionId) {
@@ -145,6 +150,15 @@ export default {
 
     async confirmAnswers() {
       try {
+
+        if (!this.doquestArr.name || !this.doquestArr.phoneNumder || !this.doquestArr.email) {
+      // 提示用户输入姓名、电话号码和电子邮件
+      // 你可以使用适当的 UI 库或弹出框库来显示提示信息
+      alert("需要全部輸入");
+
+      console.error('Name, PhoneNumber, and Email are required');
+      return;
+    }      // 提示用户输入姓名、电话号码和电子邮件
         this.processSelectedOptions();
         const userResponse = {
           userList: [
@@ -169,10 +183,15 @@ export default {
         // Handle the response as needed
         if (response.ok) {
           // Handle success
+          alert("填寫問卷成功");
+
+          this.$router.push('/frontQuestPage');
 
           console.log('Answers submitted successfully');
         } else {
           // Handle error
+          alert("此名字電話信箱已填寫過");
+
           console.error('Failed to submit answers');
         }
       } catch (error) {
@@ -229,7 +248,7 @@ export default {
             <div v-for="(option, optionIndex) in question.options.split(';')" :key="optionIndex">
               <input type="checkbox" :id="'q_' + questionIndex + '_o_' + optionIndex" :value="option"
                 v-model="checkinfo[question.questionId + '_o_' + optionIndex]" />
-              <label :for="'q_' + questionIndex + '_' + optionIndex">{{ option }}</label>
+              <label :for="'q_' + questionIndex + '_o_' + optionIndex">{{ option }}</label>
             </div>
           </div>
 
@@ -239,13 +258,29 @@ export default {
         </div>
 
       </div>
-      <button @click="confirmAnswers">確認送出</button>
+      <button @click="confirmAnswers" class="submit-button">確認送出</button>
 
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+.submit-button {
+  bottom: 20px; /* 距离底部 20px */
+  right: 20px; /* 距离右侧 20px */
+  background-color: #06404e;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 16px;
+
+  &:hover {
+    background-color: #45a049;
+  }
+}
 .doQuestPageBody {
   display: flex;
   flex-direction: column;
