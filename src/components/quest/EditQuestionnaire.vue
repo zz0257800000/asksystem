@@ -166,7 +166,7 @@ export default {
 
             console.log("Final questionList Data:", this.questionList);
             var newQuestionnaire = {
-                hwQuestionnaire: {
+                questionnaire: {
                     questionnaireId: this.$route.params.updateQuestPageId,
                     title: this.title,
                     description: this.description,
@@ -177,8 +177,9 @@ export default {
                 questionList: this.questionList,
             };
             console.log(newQuestionnaire)
+            
 
-            fetch('http://localhost:8080/api/quiz/createOrUpdate', {
+            fetch('http://localhost:8080/api/quiz/api/quiz/create', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
