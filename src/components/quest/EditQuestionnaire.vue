@@ -1,4 +1,3 @@
-
   
 <script>
 export default {
@@ -21,7 +20,14 @@ export default {
 
 
         };
+    }, computed: {
+    minStartDate() {
+      const today = new Date();
+      today.setDate(today.getDate() + 1);
+      const formattedToday = today.toISOString().split('T')[0];
+      return formattedToday;
     },
+  },
     methods: {
         fetchData() {
             const questionnaireIdToFind = this.$route.params.wantId;
@@ -110,61 +116,33 @@ export default {
         togglePublishedStatus() {
             this.published = !this.published;
         }, postUpdateDataToDbAndPublished() {
-            this.questArr.forEach((quest, questionIndex) => {
-                const optionTextArray = quest.options.map(option => option.text);
-                this.questArr[questionIndex].optionText = optionTextArray.join(';');
-            });
+            if (!this.title || !this.startDate || !this.endDate) {
+        alert('请填写所有必填项');
+        return;
+      }// 檢查時間
+      const startDateTime = new Date(this.startTime);
+            const endDateTime = new Date(this.endTime);
 
-            console.log("Updated questArr Data:", this.questArr); // 確認更新後的 questArr 資料
-
-
-
-            // 初始化 questArr
-            this.questArr = [];
-            const quizData = response.data; // 这里假设后端返回的数据包含问卷的所有信息
-            // 将问卷数据填充到编辑相关的变量中
-            this.editingQuizId = parsedQuizId;
-            // 填充其他问卷数据...
-            console.log("quizData: ", quizData);
-            console.log("quizId: ", this.editingQuizId);
-            // 使用 for 迴圈處理每個問題
-            for (let i = 0; i < quizData.questionList.length; i++) {
-                const questItem = quizData.questionList[i];
-                const optionsArray = questItem.option ? questItem.option.split(';') : [];
-
-                // 使用 map 初始化 optionsArray
-                const options = optionsArray.map(optionText => ({
-                    selected: false, // 或者根據需要初始化為 true
-                    text: optionText,
-                }));
-
-                // 在 questArr 中添加新問題
-                const newQuestion = {
-                    quId: i + 1,
-                    questionnaireId: this.$route.params.updateQuestPageId,
-                    optionsType: questItem.questionTypes,
-                    qTitle: questItem.questionText,
-                    options: options,
-                };
-
-                // 添加新問題到 questArr
-                this.questArr.push(newQuestion);
-
+            if (endDateTime <= startDateTime) {
+                alert('結束時間不能早於或等於開始時間。');
+                return;
             }
 
-            // 將 questArr 資料複製到 questionList
-            this.questionList = this.questArr.map((quest, index) => ({
-                quId: index + 1,
-                questionnaireId: quest.questionnaireId,
-                optionsType: quest.optionsType,
-                qTitle: quest.qTitle,
-                options: [...quest.options], // 複製 options 陣列
-            }));
+      // 清空questionList
+      this.searchAllList.questionList = [];
 
-
-            console.log(this.questArr.map(quest => quest.options));
-
-            console.log("Final questionList Data:", this.questionList);
+      // 将questArr转换为questionList格式
+      this.questArr.forEach((quest, id) => {
+        const questionData = {
+          // quid: this.questArr.length + 1,  // 使用题目的索引作为 quid
+          quId: id+1,  // 使用题目的索引作为 quid
+          qTitle: quest.question,
+          optionsType: quest.questionType,
+          options: quest.options.map((option) => option.text).join(';'),
+        };
+        // 添加到数组
+        this.searchAllList.questionList.push(questionData);
+      });
             var newQuestionnaire = {
                 questionnaire: {
                     questionnaireId: this.$route.params.updateQuestPageId,
@@ -174,12 +152,12 @@ export default {
                     endDate: this.endDate,
                     published: 1,
                 },
-                questionList: this.questionList,
+                questionList: this.searchAllList.questionList,
             };
-            console.log(newQuestionnaire)
+            console.log(this.searchAllList.questionList)
             
-
-            fetch('http://localhost:8080/api/quiz/api/quiz/create', {
+                
+            fetch('http://localhost:8080/api/quiz/create', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -189,6 +167,7 @@ export default {
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! Status: ${response.status}`);
+
                     }
                     return response.json();
                 })
@@ -196,6 +175,8 @@ export default {
                     console.log(data);
                 })
                 .catch(error => console.error('Error:', error));
+                this.$router.push('/questHome');
+
             alert("更新問卷成功")
         }, togglePublishedStatus() {
             this.published = !this.published;
@@ -216,7 +197,7 @@ export default {
                 </button>
                 <div>
                     <label for="">问卷名称</label>
-                    <input style="width: 90%;" type="text" v-model="this.title">
+                    <input style="width: 90%;" type="text" v-model="title">
 
                 </div>
             </div>

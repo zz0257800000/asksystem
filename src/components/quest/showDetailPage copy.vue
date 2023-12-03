@@ -30,12 +30,7 @@ export default {
 
 
     async mounted() {
-        try {
-            await this.questionnaireInfo();
-            // 在此处处理异步操作完成后的逻辑
-        } catch (error) {
-            console.error('Error:', error);
-        }
+     
     },
 
 
