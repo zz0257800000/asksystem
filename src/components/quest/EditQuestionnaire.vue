@@ -115,49 +115,62 @@ export default {
         },
         togglePublishedStatus() {
             this.published = !this.published;
-        }, postUpdateDataToDbAndPublished() {
+        }, 
+        postUpdateDataToDbAndPublished() {
             if (!this.title || !this.startDate || !this.endDate) {
         alert('请填写所有必填项');
         return;
       }// 檢查時間
-      const startDateTime = new Date(this.startTime);
-            const endDateTime = new Date(this.endTime);
+      const startDateTime = new Date(this.startDate);
+            const endDateTime = new Date(this.endDate);
 
             if (endDateTime <= startDateTime) {
                 alert('結束時間不能早於或等於開始時間。');
                 return;
             }
 
-      // 清空questionList
-      this.searchAllList.questionList = [];
+   
+      this.questArr.forEach((quest, questionIndex) => {
+                const optionTextArray = quest.options.map(option => option.text);
+                this.questArr[questionIndex].optionText = optionTextArray.join(';');
+            });
+            console.log("Updated questArr Data:", this.questArr); // 確認更新後的 questArr 資料
 
       // 将questArr转换为questionList格式
       this.questArr.forEach((quest, id) => {
-        const questionData = {
+        return {
           // quid: this.questArr.length + 1,  // 使用题目的索引作为 quid
           quId: id+1,  // 使用题目的索引作为 quid
           qTitle: quest.question,
           optionsType: quest.questionType,
-          options: quest.options.map((option) => option.text).join(';'),
-        };
+          options: quest.options.map(option => {
+                        return {
+                            text: option.text
+                        };
+                    }),
+                    optionText: quest.optionText
+                };
         // 添加到数组
-        this.searchAllList.questionList.push(questionData);
       });
-            var newQuestionnaire = {
-                questionnaire: {
-                    questionnaireId: this.$route.params.updateQuestPageId,
-                    title: this.title,
-                    description: this.description,
-                    startDate: this.startDate,
-                    endDate: this.endDate,
-                    published: 1,
-                },
-                questionList: this.searchAllList.questionList,
+      console.log("Final questionnaire Data:", this.questionnaire);
+
+      const newQuestionnaire = {
+        questionnaire: {
+                questionnaireId: this.searchAllList.questionnaire.id,
+                title: this.title,
+                description: this.description,
+                published: this.published,
+                startDate: this.startDate,
+                endDate: this.endDate,
+            },
+
+            questionList: this.questionList,
+
+
             };
-            console.log(this.searchAllList.questionList)
-            
-                
-            fetch('http://localhost:8080/api/quiz/create', {
+            console.log(newQuestionnaire)
+
+            fetch('http://localhost:8080/api/quiz/createOrUpdate', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -175,10 +188,13 @@ export default {
                     console.log(data);
                 })
                 .catch(error => console.error('Error:', error));
-                this.$router.push('/questHome');
+                // this.$router.push('/questHome');
 
             alert("更新問卷成功")
-        }, togglePublishedStatus() {
+        },
+      
+        
+        togglePublishedStatus() {
             this.published = !this.published;
         },
     },

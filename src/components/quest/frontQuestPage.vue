@@ -24,6 +24,16 @@ export default {
   },
 
   methods: {
+        // 新增判斷問卷是否開啟的方法
+        isQuestionnaireOpen(quest) {
+      const currentDateTime = new Date();
+      const startDateTime = new Date(quest.startDate);
+      const endDateTime = new Date(quest.endDate);
+
+      return quest.published && currentDateTime >= startDateTime && currentDateTime <= endDateTime;
+    },
+  
+
     searchParam() {
       const title = this.searchText;
       const published = this.published;
@@ -121,7 +131,6 @@ export default {
 
         <button class="searchButton" @click="searchParam()">検索</button>
       </div>
-      
     </div>
     <div class="showList">
       <table>
@@ -132,24 +141,23 @@ export default {
             <th>ステータス</th>
             <th>開始時間</th>
             <th>終了時間</th>
-            <th>填寫問卷</th>
+            <th>回答する</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(quest, index) in getPage(currentPage)" :key="index">
             <td>{{ index + 1 }}</td>
             <td>
-      <!-- 使用 v-if 來條件渲染連結 -->
-      <span  v-if="quest.published" :to="'/questHome/doQuestPage/' + quest.id">{{ quest.title }}</span>
+              <!-- 使用 v-if 來條件渲染連結 -->
+              <span v-if="quest.published" :to="'/questHome/doQuestPage/' + quest.id"  title="アンケート">{{ quest.title }}</span>
 
-      <span v-else>{{ quest.title }}</span>
-    </td>
-    <td :style="{ 'color': quest.published ? 'green' : 'red' }">{{ quest.published ? '開啟中' : '關閉中' }}</td>
+              <span v-else>{{ quest.title }}</span>
+            </td>
+            <td :style="{ 'color': quest.published ? 'green' : 'red' }">{{ quest.published ? '開始中' : '終了中' }}</td>
             <td>{{ quest.startDate }}</td>
             <td>{{ quest.endDate }}</td>
             <td>
-              <router-link v-if="quest.published" :to="'/questHome/doQuestPage/' + quest.id"><i class="fa-regular fa-pen-to-square"></i></router-link>
-
+              <router-link v-if="quest.published" :to="'/questHome/doQuestPage/' + quest.id" title="回答する"><i class="fa-regular fa-pen-to-square"></i></router-link>
             </td>
           </tr>
         </tbody>
@@ -162,6 +170,7 @@ export default {
     </div>
   </div>
 </template>
+
 
 <style lang="scss" scoped>
 .questHomeBody {
@@ -225,7 +234,7 @@ export default {
     border-radius: 10px;
     overflow: auto;
     background-color: #222;
-    min-height: 65vh;
+    min-height: 68vh;
 
     table {
       width: 100%;

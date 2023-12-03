@@ -150,64 +150,64 @@ export default {
   <div class="createQuestPageBody">
     <div class="createQuestHeader">
       <div>
-        <h1>新增问卷</h1>
+        <h1>新しいアンケートを作成</h1>
         <button @click="togglePublishedStatus" :style="{ 'background-color': published ? 'red' : 'green' }">
-          {{ published ? '關閉問卷' : '開啟問卷' }}
+          {{ published ? 'アンケートを閉じる' : 'アンケートを開く' }}
         </button>
         <div>
-          <label for="">问卷名称</label>
-          <input style="width: 90%;" type="text" v-model="title">
+          <label for="">アンケートの名前</label>
+          <input style="width: 79%;" type="text" v-model="title">
         </div>
       </div>
       <div>
-        <label for="">描述內容</label>
+        <label for="">説明</label>
         <input style="width: 90%;" type="text" v-model="description">
       </div>
       <div>
-        <label for="">问卷开始时间</label>
+        <label for="">アンケート開始日</label>
         <input type="date" v-model="startDate" :min="minStartDate">
-        <label for="">问卷结束时间</label>
+        <label for="">アンケート終了日</label>
         <input type="date" v-model="endDate" :min="minStartDate">
       </div>
       <div>
-        <button @click="createNewQuest()">新增问题</button>
-        <button @click="postToDB()" style="background-color: rgb(128, 179, 255);">Post to DB</button>
+        <button @click="createNewQuest()">質問を追加</button>
+        <button v-on:click="postToDbNotPublishedYet()">一時的に公開しない</button>
+        <button @click="postToDB()" style="background-color: rgb(128, 179, 255);">アンケートを公開</button>
       </div>
     </div>
 
     <div>
-      <!-- Iterate through each question in questArr -->
+      <!-- 各質問をquestArr内で繰り返す -->
       <div class="createQuest" v-for="(quest, questionIndex) in questArr" :key="questionIndex">
-        <!-- Question Type Dropdown -->
-        <label>第{{ questionIndex + 1 }}题</label>
+        <!-- 質問タイプのドロップダウン -->
+        <label>第{{ questionIndex + 1 }}問</label>
         <select v-model="quest.questionType">
           <option v-for="(type, index) in questionTypes" :key="index" :value="type">
-            {{ type === 'radio' ? '单选' : type === 'checkbox' ? '多选' : '简答' }}
+            {{ type === 'radio' ? '単一選択' : type === 'checkbox' ? '複数選択' : '記述' }}
           </option>
         </select>
 
-        <!-- Question Input -->
-        <input type="text" v-model="quest.question" placeholder="输入问题">
+        <!-- 質問の入力 -->
+        <input type="text" v-model="quest.question" placeholder="質問を入力">
 
-        <!-- Button to Add Options -->
-        <button @click="createNewOptions(questionIndex)">新增选项</button>
+        <!-- オプションを追加するボタン -->
+        <button @click="createNewOptions(questionIndex)">オプションを追加</button>
 
-        <!-- Display Options -->
+        <!-- オプションを表示する -->
         <div class="NewOptions" v-for="(option, optionIndex) in quest.options" :key="optionIndex">
-                <input v-if="quest.questionType === 'radio'" type="radio" name="radioGroup"
-                    v-model="quest.options[optionIndex].selected">
-                <input v-if="quest.questionType === 'checkbox'" type="checkbox"
-                    v-model="quest.options[optionIndex].selected">
-                <input type="text" placeholder="輸入選項" v-model="quest.options[optionIndex].text">
-                <button style="background-color: rgb(145, 145, 145);" @click="deleteNewOptions(questionIndex, optionIndex)">刪除選項</button>
-            </div>
+          <input v-if="quest.questionType === 'radio'" type="radio" name="radioGroup" v-model="quest.options[optionIndex].selected">
+          <input v-if="quest.questionType === 'checkbox'" type="checkbox" v-model="quest.options[optionIndex].selected">
+          <input type="text" placeholder="オプションを入力" v-model="quest.options[optionIndex].text">
+          <button style="background-color: rgb(145, 145, 145);" @click="deleteNewOptions(questionIndex, optionIndex)">オプションを削除</button>
+        </div>
 
-        <!-- Button to Delete Question -->
-        <button style="margin-left: 43px; background-color: rgb(77, 77, 77);" @click="deleteNewQuest(questionIndex)">删除问题</button>
+        <!-- 質問を削除するボタン -->
+        <button style="margin-left: 43px; background-color: rgb(77, 77, 77);" @click="deleteNewQuest(questionIndex)">質問を削除</button>
       </div>
     </div>
   </div>
 </template>
+
 
 <style lang="scss" scoped>
 .createQuestPageBody {

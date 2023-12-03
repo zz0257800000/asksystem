@@ -36,14 +36,45 @@ export default {
     .f1a {
         text-decoration: none;
         color: rgb(255, 255, 255);
+        transition: 0.3s;
+        width: 10vw;
+        display: flex;
+    justify-content: center;
+    align-items: center;
+        &:hover{
+            background-color: aqua;
+            border-radius: 10px;
+        }
     }
     .f2a {
+        transition: 0.3s;
+
         text-decoration: none;
         color: rgb(255, 0, 0);
+        display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 10vw;
+
+        &:hover{
+            background-color: rgb(119, 119, 119);
+            border-radius: 10px;
+        }
     }
     .a {
+        transition: 0.3s;
+
         text-decoration: none;
         color: rgb(0, 119, 255);
+        display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20vw;
+
+        &:hover{
+            background-color: rgb(255, 0, 255);
+            border-radius: 10px;
+        }
     }
 }
 </style>

@@ -252,7 +252,7 @@ export default {
             </div>
           </div>
 
-          <div v-else-if="question.optionsType === 'text'">
+          <div v-else-if="question.optionsType === 'text'"  class="input-wrapper">
             <input v-model="checkinfo[question.questionId]" type="text" />
           </div>
         </div>
@@ -273,12 +273,15 @@ export default {
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
+  position: relative;
+  left: 47%;
+  bottom: 10%;
   cursor: pointer;
   transition: background-color 0.3s;
   font-size: 16px;
 
   &:hover {
-    background-color: #45a049;
+    background-color: rgb(69, 160, 160);
   }
 }
 .doQuestPageBody {
@@ -291,7 +294,7 @@ export default {
 }
 
 .doQuestHeader {
-  width: 900px;
+  width: 78vw;
   border: 1px solid #333;
   padding: 10px;
   border-radius: 10px;
@@ -300,7 +303,7 @@ export default {
 }
 
 .fixedQuest {
-  width: 900px;
+  width: 78vw;
   height: auto;
   border: 1px solid #333;
   border-radius: 10px;
@@ -312,11 +315,11 @@ export default {
 .fixedQuest div {
   display: flex;
   align-items: center;
-  margin: 10px 0;
+  margin: 20px 0;
 }
 
 .fixedQuest label {
-  width: 100px;
+  width: 130px;
   font-weight: bold;
   color: #fff;
 }
@@ -326,7 +329,7 @@ export default {
 }
 
 .fluidQuest {
-  width: 900px;
+  width: 78vw;
   border: 1px solid #333;
   border-radius: 10px;
   padding: 20px;
@@ -337,6 +340,8 @@ export default {
 .fluidQuest label {
   font-weight: bold;
   color: #fff;
+  margin: 10px 0;
+
 }
 
 .fluidQuest input[type="radio"] {
@@ -356,5 +361,15 @@ export default {
 
 .fluidQuest button:hover {
   background-color: #2980b9;
+}
+.input-wrapper input[type="text"] {
+  width: 550px; /* 你想要的宽度 */
+height: 100px;
+  padding: 10px; /* 可选的内边距 */
+  /* 其他样式... */
+  white-space: pre-wrap;
+  resize: vertical; /* 或者使用 horizontal，根据需要调整 */
+  max-height: 200px; /* 设置输入框的最大高度，根据需要调整 */
+
 }
 </style>

@@ -108,6 +108,15 @@ export default {
         // 如果全選框未被選中，清空 selectedRows
         this.selectedRows = [];
       }
+    }, oggleRowColor(id) {
+      this.$nextTick(() => {
+        // 在勾选或取消勾选时，根据selectedRows数组中的值来更新行的颜色
+        const rows = document.querySelectorAll('.selected-row');
+        rows.forEach((row, index) => {
+          const questId = this.getPage(this.currentPage)[index].id;
+          row.style.backgroundColor = this.selectedRows.includes(questId) ? 'red' : '';
+        });
+      });
     },
   }
 };
@@ -150,25 +159,26 @@ export default {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(quest, index) in getPage(currentPage)" :key="index">
+          <tr v-for="(quest, index) in getPage(currentPage)" :key="index"
+            :class="{ 'selected-row': selectedRows.includes(quest.id) }">
             <td>
 
               <input type="checkbox" v-model="selectedRows" :value="quest.id">
             </td>
             <td>{{ index + 1 }}</td>
             <td>
-              <router-link :to="'/questHome/doQuestPage/' + quest.id">{{ quest.title }}</router-link>
+              <router-link :to="'/questHome/doQuestPage/' + quest.id" title="アンケート">{{ quest.title }}</router-link>
             </td>
-            <td :style="{ 'color': quest.published ? 'green' : 'red' }">{{ quest.published ? '開啟中' : '關閉中' }}</td>
+            <td :style="{ 'color': quest.published ? 'green' : 'red' }">{{ quest.published ? '開始中' : '終了中' }}</td>
             <td>{{ quest.startDate }}</td>
             <td>{{ quest.endDate }}</td>
             <td>
-              <router-link :to="'/showDetailPage/' + quest.id">統計情報を見る</router-link>
+              <router-link :to="'/showDetailPage/' + quest.id" title="統計情報を見る">統計情報を見る</router-link>
             </td>
 
-            
+
             <td>
-              <router-link :to="'/questHome/EditQuestionnaire/' + quest.id"><i class="fa-solid fa-pencil"></i></router-link>
+              <router-link :to="'/questHome/EditQuestionnaire/' + quest.id" title="更改問卷"> <i class="fa-solid fa-pencil"></i></router-link>
             </td>
           </tr>
         </tbody>
@@ -183,6 +193,15 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+.selected-row {
+  background-color: red;
+  transition: background-color 0.3s;
+}
+
+.selected-row:hover {
+  background-color: darkred;
+}
+
 .questHomeBody {
   display: flex;
   flex-direction: column;
