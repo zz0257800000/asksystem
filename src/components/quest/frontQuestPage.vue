@@ -234,7 +234,7 @@ export default {
     border-radius: 10px;
     overflow: auto;
     background-color: #222;
-    min-height: 68vh;
+    min-height: 71vh;
 
     table {
       width: 100%;

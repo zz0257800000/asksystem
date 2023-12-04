@@ -207,65 +207,63 @@ export default {
     <div class="editQuestPageBody">
         <div class="editQuestHeader">
             <div>
-                <h1>更改問卷</h1>
+                <h1>アンケートの変更</h1>
                 <button @click="togglePublishedStatus" :style="{ 'background-color': published ? 'red' : 'green' }">
-                    {{ published ? '關閉問卷' : '開啟問卷' }}
+                    {{ published ? 'アンケートを閉じる' : 'アンケートを開く' }}
                 </button>
                 <div>
-                    <label for="">问卷名称</label>
+                    <label for="">アンケート名</label>
                     <input style="width: 90%;" type="text" v-model="title">
-
                 </div>
             </div>
             <div>
-                <label for="">描述內容</label>
+                <label for="">説明内容</label>
                 <input style="width: 90%;" type="text" v-model="description">
             </div>
             <div>
-                <label for="">问卷开始时间</label>
+                <label for="">アンケート開始日</label>
                 <input type="date" v-model="startDate" :min="minStartDate">
-                <label for="">问卷结束时间</label>
+                <label for="">アンケート終了日</label>
                 <input type="date" v-model="endDate" :min="minStartDate">
             </div>
             <div>
-                <button @click="createNewQuest()">新增问题</button>
-                <button @click="postUpdateDataToDbAndPublished()" style="background-color: red;">Update to DB</button>
+                <button @click="createNewQuest()">質問を追加</button>
+                <button @click="postUpdateDataToDbAndPublished()" style="background-color: red;">DBに更新</button>
             </div>
         </div>
 
         <div>
             <div class="editQuest" v-for="(quest, questionIndex) in questArr" :key="questionIndex">
-                <label>第{{ questionIndex + 1 }}题</label>
+                <label>{{ questionIndex + 1 }}番目の質問</label>
                 <select v-model="quest.optionsType">
                     <option v-for="(type, index) in questionTypes" :key="index" :value="type">
-                        {{ type === 'radio' ? '单选' : type === 'checkbox' ? '多选' : '简答' }}
+                        {{ type === 'radio' ? '単一選択' : type === 'checkbox' ? '複数選択' : '記述' }}
                     </option>
                 </select>
 
-                <input type="text" v-model="quest.qTitle" placeholder="输入问题">
+                <input type="text" v-model="quest.qTitle" placeholder="質問を入力">
 
-                <button @click="createNewOptions(questionIndex)">新增选项</button>
+                <button @click="createNewOptions(questionIndex)">選択肢を追加</button>
 
                 <div v-for="(option, optionIndex) in quest.options" :key="optionIndex">
                     <input v-if="quest.optionsType === 'radio'" type="radio" :name="'radioGroup_' + questionIndex"
                         v-model="option.selected" />
                     <input v-if="quest.optionsType === 'checkbox'" type="checkbox" v-model="option.selected" />
 
-                    <input type="text" placeholder="輸入選項" v-model="option.text" />
+                    <input type="text" placeholder="オプションを入力" v-model="option.text" />
 
                     <button style="background-color: red;"
-                        @click="deleteNewOptions(questionIndex, optionIndex)">刪除選項</button>
+                        @click="deleteNewOptions(questionIndex, optionIndex)">選択肢を削除</button>
                 </div>
 
-
-
                 <button style="margin-left: 43px; background-color: red;" @click="deleteNewQuest(questionIndex)">
-                    删除问题
+                    質問を削除
                 </button>
             </div>
         </div>
     </div>
 </template>
+
 <style lang="scss" scoped>
 .editQuestPageBody {
     display: flex;

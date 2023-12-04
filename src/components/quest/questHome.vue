@@ -279,7 +279,7 @@ export default {
       th {
         background-color: #111;
       }
-
+      //變色行列
       tr:nth-child(even) {
         background-color: #333;
       }
