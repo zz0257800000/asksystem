@@ -40,6 +40,8 @@ export default {
   methods: {
   getQuizInfo() {
       const questionnaireIdToFind = this.$route.params.wantId;
+      this.questionnaireId = questionnaireIdToFind;
+
       this.checkinfo = {};
       if (this.searchAllList.questionList) {
 
@@ -163,7 +165,7 @@ export default {
         const userResponse = {
           userList: [
             {
-              quizId: this.$route.params.wantId,
+              quizId: this.questionnaireId,
               phoneNumber: this.doquestArr.phoneNumder,
               name: this.doquestArr.name,
               email: this.doquestArr.email,
@@ -190,7 +192,7 @@ export default {
           console.log('Answers submitted successfully');
         } else {
           // Handle error
-          alert("此名字電話信箱已填寫過");
+          alert("電話名字信箱填寫過");
 
           console.error('Failed to submit answers');
         }

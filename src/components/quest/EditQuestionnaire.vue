@@ -6,31 +6,31 @@ export default {
             searchAllList: {
                 questionnaire: [],
                 questionList: [],
-
             },
             qtitle: '',
             description: '',
             startDate: '',
             endDate: '',
             questArr: [],
+            questionDataList: [],  // 確保初始化
             questionTypes: ['radio', 'checkbox', 'text'],
-            published: false,
             minStartDate: '', // Add minStartDate if it's your data
             questionList: [],  // 確保有 questionList 這個屬性
-
-
+            questionnaireId: null,
+            published: '',
         };
     }, computed: {
-    minStartDate() {
-      const today = new Date();
-      today.setDate(today.getDate() + 1);
-      const formattedToday = today.toISOString().split('T')[0];
-      return formattedToday;
+        minStartDate() {
+            const today = new Date();
+            today.setDate(today.getDate() + 1);
+            const formattedToday = today.toISOString().split('T')[0];
+            return formattedToday;
+        },
     },
-  },
     methods: {
         fetchData() {
             const questionnaireIdToFind = this.$route.params.wantId;
+            this.questionnaireId = questionnaireIdToFind;
             fetch(`http://localhost:8080/api/quiz/searchParam?id=${questionnaireIdToFind}`, {
                 method: 'GET',
                 headers: {
@@ -39,7 +39,8 @@ export default {
             })
                 .then((response) => response.json())
                 .then((data) => {
-                    console.log('Data updated successfully:', data);
+                    // console.log('Data updated successfully:', data);
+
 
                     const quizData = data.quizVoList.find(
                         (quiz) => quiz.questionnaire.id === parseInt(questionnaireIdToFind)
@@ -51,6 +52,8 @@ export default {
                         this.startDate = quizData.questionnaire.startDate;
                         this.endDate = quizData.questionnaire.endDate;
                         this.questArr = quizData.questionList;
+                        this.published = quizData.questionnaire.published; // Update published status
+
 
                         // 用问题数组初始化 questArr
                         // 检查 questionList 是否为数组
@@ -60,7 +63,11 @@ export default {
                                 ...question,
                                 options: question.optionsType === 'text' ? [] : question.options.split(';').map(text => ({ selected: false, text })),
                             }));
-                            console.log(this.questArr)
+                            // console.log(questionnaireIdToFind);
+
+                            console.log(quizData.questionnaire)
+                            console.log(quizData.questionList)
+
 
 
                         } else {
@@ -71,6 +78,8 @@ export default {
                     }
                 })
                 .catch((error) => console.error('エラー:', error));
+
+
         },
 
         createNewQuest() {
@@ -79,8 +88,8 @@ export default {
                 return;
             }
             const newQuestion = {
-                questionType: '', // 設置默認的問題類型
-                question: '',
+                optionsType: '', // 設置默認的問題類型
+                qTitle: '',
                 options: [],
             };
             this.questArr.push(newQuestion);
@@ -115,13 +124,14 @@ export default {
         },
         togglePublishedStatus() {
             this.published = !this.published;
-        }, 
+        },
         postUpdateDataToDbAndPublished() {
             if (!this.title || !this.startDate || !this.endDate) {
-        alert('请填写所有必填项');
-        return;
-      }// 檢查時間
-      const startDateTime = new Date(this.startDate);
+                alert('请填写所有必填项');
+                return;
+            }
+            // 檢查時間
+            const startDateTime = new Date(this.startDate);
             const endDateTime = new Date(this.endDate);
 
             if (endDateTime <= startDateTime) {
@@ -129,46 +139,38 @@ export default {
                 return;
             }
 
-   
-      this.questArr.forEach((quest, questionIndex) => {
-                const optionTextArray = quest.options.map(option => option.text);
-                this.questArr[questionIndex].optionText = optionTextArray.join(';');
-            });
-            console.log("Updated questArr Data:", this.questArr); // 確認更新後的 questArr 資料
 
-      // 将questArr转换为questionList格式
-      this.questArr.forEach((quest, id) => {
-        return {
-          // quid: this.questArr.length + 1,  // 使用题目的索引作为 quid
-          quId: id+1,  // 使用题目的索引作为 quid
-          qTitle: quest.question,
-          optionsType: quest.questionType,
-          options: quest.options.map(option => {
-                        return {
-                            text: option.text
-                        };
-                    }),
-                    optionText: quest.optionText
+            // 处理问题数组
+           
+            this.searchAllList.questionList = [];
+            this.questionList = []; // 正確的數據屬性
+
+            const questionList = this.questArr.map((quest, quId) => {
+                return {
+                    qnId: this.questionnaireId,
+                    qTitle: quest.qTitle,
+                    optionsType: quest.optionsType,
+                    options: quest.options.map((option) => option.text).join(';'),
                 };
-        // 添加到数组
-      });
-      console.log("Final questionnaire Data:", this.questionnaire);
+                // 添加到陣列
 
-      const newQuestionnaire = {
-        questionnaire: {
-                questionnaireId: this.searchAllList.questionnaire.id,
-                title: this.title,
-                description: this.description,
-                published: this.published,
-                startDate: this.startDate,
-                endDate: this.endDate,
-            },
+            });
 
-            questionList: this.questionList,
+            const newQuestionnaire = {
+                questionnaire: {
+                    id: this.questionnaireId,
+                    title: this.title,
+                    description: this.description,
+                    published: this.published,
+                    startDate: this.startDate,
+                    endDate: this.endDate,
+                },
+
+                questionList: this.questionList, // 使用正确的属性名称
+
 
 
             };
-            console.log(newQuestionnaire)
 
             fetch('http://localhost:8080/api/quiz/createOrUpdate', {
                 method: 'POST',
@@ -186,16 +188,20 @@ export default {
                 })
                 .then(data => {
                     console.log(data);
+
+
                 })
                 .catch(error => console.error('Error:', error));
-                // this.$router.push('/questHome');
+            // this.$router.push('/questHome');
 
             alert("更新問卷成功")
         },
-      
-        
-        togglePublishedStatus() {
+
+
+        togglePublishedStatusFromButton() {
+            // Toggle the 'published' status
             this.published = !this.published;
+
         },
     },
     mounted() {
@@ -208,7 +214,8 @@ export default {
         <div class="editQuestHeader">
             <div>
                 <h1>アンケートの変更</h1>
-                <button @click="togglePublishedStatus" :style="{ 'background-color': published ? 'red' : 'green' }">
+                <button @click="togglePublishedStatusFromButton"
+                    :style="{ 'background-color': published ? 'red' : 'green' }">
                     {{ published ? 'アンケートを閉じる' : 'アンケートを開く' }}
                 </button>
                 <div>
@@ -228,7 +235,8 @@ export default {
             </div>
             <div>
                 <button @click="createNewQuest()">質問を追加</button>
-                <button @click="postUpdateDataToDbAndPublished()" style="background-color: rgb(0, 170, 255);">アンケート更新</button>
+                <button @click="postUpdateDataToDbAndPublished()"
+                    style="background-color: rgb(0, 170, 255);">アンケート更新</button>
             </div>
         </div>
 

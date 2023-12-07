@@ -177,16 +177,16 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #1a1a1a;
+  background-color: #ffc0cb; /* 使用粉色背景，可根据需要调整颜色 */
   padding: 20px;
-  color: #fff;
+  color: rgba(218, 41, 173, 0.723);
 
   .searchList {
     width: 100%;
-    border: 1px solid #333;
+    border: 1px solid #ffb6c1; /* 使用淡粉色边框 */
     border-radius: 10px;
     margin-bottom: 20px;
-    background-color: #222;
+    background-color: #ffe4e1; /* 使用淡桃色背景 */
 
     .searchListTop,
     .searchListDown {
@@ -204,7 +204,7 @@ export default {
     .searchButton,
     .createButton {
       padding: 10px;
-      background-color: #3498db;
+      background-color: #ff69b4; /* 使用深粉红色按钮 */
       color: #fff;
       border: none;
       border-radius: 5px;
@@ -215,12 +215,12 @@ export default {
     .deleteButton:hover,
     .searchButton:hover,
     .createButton:hover {
-      background-color: #2980b9;
+      background-color: #ff1493; /* 鼠标悬停时使用更深的粉红色 */
     }
 
     input {
       padding: 8px;
-      border: 1px solid #333;
+      border: 1px solid #ffb6c1; /* 使用淡粉色边框 */
       border-radius: 5px;
       margin-right: 10px;
       color: #333;
@@ -230,11 +230,11 @@ export default {
 
   .showList {
     width: 100%;
-    border: 1px solid #333;
+    border: 1px solid #ffb6c1; /* 使用淡粉色边框 */
     border-radius: 10px;
     overflow: auto;
-    background-color: #222;
-    min-height: 71vh;
+    background-color: #ffe4e1; /* 使用淡桃色背景 */
+    min-height: 68vh;
 
     table {
       width: 100%;
@@ -242,17 +242,17 @@ export default {
 
       th,
       td {
-        border: 1px solid #333;
+        border: 1px solid #ffb6c1; /* 使用淡粉色边框 */
         padding: 12px;
         text-align: center;
       }
 
       th {
-        background-color: #111;
+        background-color: #ff69b4; /* 使用深粉红色表头 */
       }
 
       tr:nth-child(even) {
-        background-color: #333;
+        background-color: #ffcccc; /* 使用淡红色背景 */
       }
     }
   }
@@ -266,7 +266,7 @@ export default {
 
   .pageButton {
     padding: 8px 12px;
-    background-color: #3498db;
+    background-color: #ff69b4; /* 使用深粉红色按钮 */
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -275,7 +275,8 @@ export default {
   }
 
   .pageButton:hover {
-    background-color: #2980b9;
+    background-color: #ff1493; /* 鼠标悬停时使用更深的粉红色 */
   }
 }
 </style>
+

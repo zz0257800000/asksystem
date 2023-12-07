@@ -102,7 +102,6 @@ export default {
           quId: id+1,  // 使用题目的索引作为 quid
           qTitle: quest.question,
           optionsType: quest.questionType,
-          necessary: false,
           options: quest.options.map((option) => option.text).join(';'),
         };
         // 添加到数组
@@ -171,7 +170,6 @@ export default {
       </div>
       <div>
         <button @click="createNewQuest()">質問を追加</button>
-        <button v-on:click="postToDbNotPublishedYet()">一時的に公開しない</button>
         <button @click="postToDB()" style="background-color: rgb(128, 179, 255);">アンケートを公開</button>
       </div>
     </div>
