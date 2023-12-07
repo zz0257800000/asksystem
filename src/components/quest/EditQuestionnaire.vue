@@ -228,7 +228,7 @@ export default {
             </div>
             <div>
                 <button @click="createNewQuest()">質問を追加</button>
-                <button @click="postUpdateDataToDbAndPublished()" style="background-color: red;">DBに更新</button>
+                <button @click="postUpdateDataToDbAndPublished()" style="background-color: rgb(0, 170, 255);">アンケート更新</button>
             </div>
         </div>
 
@@ -252,11 +252,11 @@ export default {
 
                     <input type="text" placeholder="オプションを入力" v-model="option.text" />
 
-                    <button style="background-color: red;"
+                    <button style="background-color: rgb(68, 68, 68);"
                         @click="deleteNewOptions(questionIndex, optionIndex)">選択肢を削除</button>
                 </div>
-
-                <button style="margin-left: 43px; background-color: red;" @click="deleteNewQuest(questionIndex)">
+                <br>
+                <button style="margin-left: 43px; background-color: rgb(4, 4, 4);" @click="deleteNewQuest(questionIndex)">
                     質問を削除
                 </button>
             </div>

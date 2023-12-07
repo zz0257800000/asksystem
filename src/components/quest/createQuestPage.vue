@@ -200,7 +200,7 @@ export default {
           <input type="text" placeholder="オプションを入力" v-model="quest.options[optionIndex].text">
           <button style="background-color: rgb(145, 145, 145);" @click="deleteNewOptions(questionIndex, optionIndex)">オプションを削除</button>
         </div>
-
+        <br>
         <!-- 質問を削除するボタン -->
         <button style="margin-left: 43px; background-color: rgb(77, 77, 77);" @click="deleteNewQuest(questionIndex)">質問を削除</button>
       </div>
