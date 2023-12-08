@@ -7,7 +7,7 @@ export default {
                 questionnaire: [],
                 questionList: [],
             },
-            qtitle: '',
+            qTitle: '',
             description: '',
             startDate: '',
             endDate: '',
@@ -15,7 +15,9 @@ export default {
             questionDataList: [],  // 確保初始化
             questionTypes: ['radio', 'checkbox', 'text'],
             minStartDate: '', // Add minStartDate if it's your data
-            questionList: [],  // 確保有 questionList 這個屬性
+            AquestArr: [],
+            abc: null,
+
             questionnaireId: null,
             published: '',
         };
@@ -61,7 +63,7 @@ export default {
                             // 将获取到的问题数据设置到 questArr
                             this.questArr = quizData.questionList.map((question) => ({
                                 ...question,
-                                options: question.optionsType === 'text' ? [] : question.options.split(';').map(text => ({ selected: false, text })),
+                                options: question.optionsType === 'text' ? [] : question.options.split(';').map(text => ({  text })),
                             }));
                             // console.log(questionnaireIdToFind);
 
@@ -88,8 +90,8 @@ export default {
                 return;
             }
             const newQuestion = {
-                optionsType: '', // 設置默認的問題類型
-                qTitle: '',
+                questionType: '', // 設置默認的問題類型
+                question: '',
                 options: [],
             };
             this.questArr.push(newQuestion);
@@ -106,7 +108,7 @@ export default {
                 return;
             }
             const newOption = {
-                text: '',
+                text: `新选项${this.questArr[questionIndex].options.length + 1}`, // 设置新选项的文本
                 selected: true,
             };
 
@@ -139,23 +141,26 @@ export default {
                 return;
             }
 
-
+''
             // 处理问题数组
            
             this.searchAllList.questionList = [];
-            this.questionList = []; // 正確的數據屬性
+            this.questionList = this.questArr; // 正確的數據屬性
 
-            const questionList = this.questArr.map((quest, quId) => {
-                return {
-                    qnId: this.questionnaireId,
-                    qTitle: quest.qTitle,
-                    optionsType: quest.optionsType,
-                    options: quest.options.map((option) => option.text).join(';'),
-                };
-                // 添加到陣列
+             const AquestArr = this.questArr.map((quest) => {
+            console.log(quest.options.map((option) => option.text).join(';'));
+            return {
+                quId: this.counter++, // 使用计数器，并递增
+                qnId: this.questionnaireId,
+                qTitle: quest.qTitle,
+                optionsType: quest.optionsType,
+                options: quest.options.map((option) => option.text).join(';'),
+            };
+        });
 
-            });
 
+
+        
             const newQuestionnaire = {
                 questionnaire: {
                     id: this.questionnaireId,
@@ -171,6 +176,21 @@ export default {
 
 
             };
+            newQuestionnaire.questionList.options = AquestArr.options;
+            console.log(AquestArr);
+            newQuestionnaire.questionList.forEach((element,index) => {
+                element.options = AquestArr[index].options;
+                console.log(element);
+
+            });
+            console.log('Current questArr:', this.questArr);
+            console.log('Updated questionList:', this.questionList);
+            this.abc = JSON.stringify(newQuestionnaire)
+
+            this.AquestArr = newQuestionnaire
+            // console.log(JSON.stringify(newQuestionnaire));
+            console.log(newQuestionnaire);
+            console.log(JSON.stringify(newQuestionnaire));
 
             fetch('http://localhost:8080/api/quiz/createOrUpdate', {
                 method: 'POST',
@@ -189,6 +209,7 @@ export default {
                 .then(data => {
                     console.log(data);
 
+                    console.log(newQuestionnaire);
 
                 })
                 .catch(error => console.error('Error:', error));

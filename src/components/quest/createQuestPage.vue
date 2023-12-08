@@ -101,7 +101,7 @@ export default {
           // quid: this.questArr.length + 1,  // 使用题目的索引作为 quid
           quId: id+1,  // 使用题目的索引作为 quid
           qTitle: quest.question,
-          optionsType: quest.questionType,
+          optionsType: quest.optionsType,
           options: quest.options.map((option) => option.text).join(';'),
         };
         // 添加到数组

@@ -187,7 +187,7 @@ export default {
           // Handle success
           alert("填寫問卷成功");
 
-          this.$router.push('/frontQuestPage');
+          // this.$router.push('/frontQuestPage');
 
           console.log('Answers submitted successfully');
         } else {
