@@ -12,9 +12,18 @@ export default {
       page: 1,
       doquestArr: [], //現在更改為陣列
   
-      hi: ''
+      hi: '',
+      singleArray:[],
+      multipleArray:[],
+      
+      textArray:[],
+      
 
     };
+  },
+  computed:{
+    
+
   },
 
   mounted() {
@@ -222,7 +231,7 @@ export default {
           <div v-if="question.optionsType === 'radio'">
             <div v-for="(option, optionIndex) in question.options.split(';')" :key="optionIndex">
               <input type="radio" :id="'q_' + index + '_o_' + optionIndex" :value="option"
-                v-model="checkinfo[question.questionId + '_radio_' + optionIndex]" name="A"  />
+                v-model="checkinfo[question.questionId + '_radio_' + optionIndex]" :name="index"/>
               <label :for="'q_' + index + '_o_' + optionIndex">{{ option }}</label>
             </div>
           </div>
