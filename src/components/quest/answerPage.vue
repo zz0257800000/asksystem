@@ -136,13 +136,6 @@ export default {
       try {
         this.processSelectedOptions();
 
-        if (!this.doquestArr.name || !this.doquestArr.phoneNumder || !this.doquestArr.email) {
-          // 提示用户输入姓名、电话号码和电子邮件
-          // 你可以使用适当的 UI 库或弹出框库来显示提示信息
-          alert("需要全部輸入");
-
-          return;
-        }      // 提示用户输入姓名、电话号码和电子邮件
       
         const userResponse = {
           userList: [
@@ -167,9 +160,8 @@ export default {
 
         // Handle the response as needed
         if (response.ok) {
-          alert("填寫問卷成功");
 
-          // this.$router.push('/frontQuestPage');
+          this.$router.push(`/showDetailPage/${this.questionnaireId}`);
 
           console.log('Answers submitted successfully');
         } else {
@@ -201,15 +193,15 @@ export default {
       <div class="fixedQuest">
         <div>
           <label for="name">Name</label>
-          <input v-model="doquestArr.name" type="text" id="name">
+          <input v-model="doquestArr.name" type="text" disabled="disabled" id="name">
         </div>
         <div>
           <label for="phoneNumder">PhoneNumber</label>
-          <input v-model="doquestArr.phoneNumder" type="text" id="phoneNumder">
+          <input v-model="doquestArr.phoneNumder" type="text" disabled="disabled" id="phoneNumder">
         </div>
         <div>
           <label for="email">Email</label>
-          <input v-model="doquestArr.email" type="text" id="email">
+          <input v-model="doquestArr.email" type="text" disabled="disabled" id="email">
         </div>
 
 
@@ -221,7 +213,7 @@ export default {
 
           <div v-if="question.optionsType === 'radio'">
             <div v-for="(option, optionIndex) in question.options.split(';')" :key="optionIndex">
-              <input type="radio" :id="'q_' + index + '_o_' + optionIndex" :value="option"
+              <input type="radio" disabled="disabled" :id="'q_' + index + '_o_' + optionIndex" :value="option"
                 v-model="checkinfo[question.questionId + '_radio_' + optionIndex]" name="A"  />
               <label :for="'q_' + index + '_o_' + optionIndex">{{ option }}</label>
             </div>
@@ -230,19 +222,19 @@ export default {
           <!-- 多选部分 -->
           <div v-else-if="question.optionsType === 'checkbox'">
             <div v-for="(option, optionIndex) in question.options.split(';')" :key="optionIndex">
-              <input type="checkbox" :id="'q_' + index + '_o_' + optionIndex" :value="option"
+              <input type="checkbox"  disabled="disabled" :id="'q_' + index + '_o_' + optionIndex" :value="option"
                 v-model="checkinfo[question.questionId + '_o_' + optionIndex]" />
               <label :for="'q_' + index + '_o_' + optionIndex">{{ option }}</label>
             </div>
           </div>
 
           <div v-else-if="question.optionsType === 'text'" class="input-wrapper">
-            <input type="text" v-model="checkinfo[question.questionId]">
+            <input type="text" disabled="disabled"  v-model="checkinfo[question.questionId]">
           </div>
         </div>
 
       </div>
-      <button @click="userCreate()" class="submit-button">確認送出</button>
+      <button @click="userCreate()" class="submit-button">返回統計情報</button>
 
     </div>
   </div>

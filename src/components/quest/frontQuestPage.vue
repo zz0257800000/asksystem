@@ -183,6 +183,7 @@ export default {
 
   .searchList {
     width: 100%;
+   
     border: 1px solid #ffb6c1; /* 使用淡粉色边框 */
     border-radius: 10px;
     margin-bottom: 20px;
@@ -230,6 +231,7 @@ export default {
 
   .showList {
     width: 100%;
+    height:68vh ;
     border: 1px solid #ffb6c1; /* 使用淡粉色边框 */
     border-radius: 10px;
     overflow: auto;

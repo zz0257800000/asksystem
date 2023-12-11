@@ -63,51 +63,45 @@ export default {
 
 <template>
     <div class="chartBody">
-        <div class="showDetailPageHeader" v-if="searchAllList.questionnaire">
-            <span>{{ searchAllList.questionnaire.startDate }}~~{{ searchAllList.questionnaire.endDate }}</span>
-            <h6>問卷名稱:{{ searchAllList.questionnaire.title }}</h6>
-            <h6>問卷描述:{{ searchAllList.questionnaire.description }}</h6>
-        </div>
-
-
-        <div class="showList ">
-            <table>
-                <thead>
-                    <tr>
-                        <th>＃</th>
-                        <th>當前問卷編號</th>
-                        <th>姓名</th>
-                        <th>電話</th>
-                        <th>信箱</th>
-                        <th>作答日期</th>
-                        <th>問卷填寫狀況</th>
-
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(info, index) in searchAllList.userList " :key="index">
-                        <td>{{ index + 1 }}</td>
-                        <td>
-                            {{ info.quizId }}
-                        </td>
-                        <td>{{ info.name }}</td>
-                        <td>{{ info.phoneNumber }}</td>
-                        <td>{{ info.email }}</td>
-                        <td>{{ info.date_time }}</td>
-                        <td>
-                            <router-link v-if="info" :to="'/questHome/answerPage/' + this.questionnaireId" title="问卷填写状态">
-                                <i class="fa-solid fa-feather"></i>
-                            </router-link>
-
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-        </div>
-
+      <div class="showDetailPageHeader" v-if="searchAllList.questionnaire">
+        <span>{{ searchAllList.questionnaire.startDate }}~~{{ searchAllList.questionnaire.endDate }}</span>
+        <h6>アンケート名: {{ searchAllList.questionnaire.title }}</h6>
+        <h6>アンケートの説明: {{ searchAllList.questionnaire.description }}</h6>
+      </div>
+  
+      <div class="showList">
+        <table>
+          <thead>
+            <tr>
+              <th>＃</th>
+              <th>現在のアンケート番号</th>
+              <th>名前</th>
+              <th>電話</th>
+              <th>メール</th>
+              <th>回答日時</th>
+              <th>アンケート回答状況</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(info, index) in searchAllList.userList" :key="index">
+              <td>{{ index + 1 }}</td>
+              <td>{{ info.quizId }}</td>
+              <td>{{ info.name }}</td>
+              <td>{{ info.phoneNumber }}</td>
+              <td>{{ info.email }}</td>
+              <td>{{ info.date_time }}</td>
+              <td>
+                <router-link v-if="info" :to="'/questHome/answerPage/' + this.questionnaireId" title="アンケート回答状況">
+                  <i class="fa-solid fa-feather"></i>
+                </router-link>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-</template>
+  </template>
+  
 
 <style lang="scss" scoped>
 .chartBody {
