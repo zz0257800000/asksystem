@@ -24,7 +24,7 @@ export default {
   },
   methods: {
     getQuizInfo() {
-      const questionnaireIdToFind = this.$route.params.wantId;
+      const questionnaireIdToFind = this.$route.params.answerId;
       this.questionnaireId = questionnaireIdToFind;
 
       this.checkinfo = {};

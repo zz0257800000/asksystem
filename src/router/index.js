@@ -27,7 +27,12 @@ const router = createRouter({
       name: "questHome/doQuestPage",
       component: () => import('../components/quest/doQuestPage.vue'),
     },
-
+    {
+      path: "/questHome/answerPage/:answerId",
+      name: "questHome/answerPage",
+      component: () => import('../components/quest/answerPage.vue'),
+    },
+  
    
     {
       path: "/frontQuestPage",
@@ -46,7 +51,7 @@ const router = createRouter({
       
     },
     {
-      path: "/showDetailPage/:id",
+      path: "/showDetailPage/:showDetailPageid",
       name: "showDetailPage",
       component: () => import("../components/quest/showDetailPage copy.vue"),
     },

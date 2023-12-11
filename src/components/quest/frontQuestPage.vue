@@ -234,7 +234,7 @@ export default {
     border-radius: 10px;
     overflow: auto;
     background-color: #ffe4e1; /* 使用淡桃色背景 */
-    min-height: 68vh;
+    min-height: vh;
 
     table {
       width: 100%;
