@@ -12,7 +12,8 @@ export default {
 
       page: 1,
       doquestArr: [], //現在更改為陣列
-      hi: ''
+      hi: '', 
+      userAnswers: [], // 保存用户答案数据
 
     };
   },
@@ -20,7 +21,8 @@ export default {
   mounted() {
 
     this.getQuizInfo();
-   
+    this.userAnswerInfo();
+
 
 
   },
@@ -76,7 +78,6 @@ export default {
     userAnswerInfo() {
       const questionnaireIdToFind = this.$route.params.quizId;
 
-      console.log(questionnaireIdToFind);
       fetch(`http://localhost:8080/api/quiz/user/showAnswer?quizId=${questionnaireIdToFind}`, {
         method: 'GET',
         headers: {
@@ -91,7 +92,8 @@ export default {
         })
         .then((data) => {
           console.log(data);
-          
+          this.userAnswers = data;
+
           
         })
         .catch((error) => console.error('Error:', error));

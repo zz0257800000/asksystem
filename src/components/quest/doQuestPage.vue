@@ -8,21 +8,19 @@ export default {
         questionnaire: [],
         questionList: [],
       },
-
       page: 1,
       doquestArr: [], //現在更改為陣列
-
       hi: '',
-      singleArray: [],
-      multipleArray: [],
-
-      textArray: [],
-      doquestArr: {
-      name: '',
-      phoneNumber: '',  // 修正此处的属性名
-      email: '',
-    },
-
+      ansArr:[],
+      ans:{
+        quizId: "",
+        ansNumber:0 ,
+        optionsType:"" ,
+        ans: "",
+        rad:"",
+        che:[],
+        tex:"",
+      },
     };
   },
   computed: {
@@ -36,22 +34,36 @@ export default {
 
   },
   methods: {
+    set_ansArr() {
+  for (let i = 0; i < this.searchAllList.questionList.length; i++) {
+    this.ansArr.push({
+      quizId: "",
+      ansNumber: 0,
+      optionsType: "",
+      ans: "",
+      rad: "",
+      che: [],
+      tex: "",
+    });
+  }
+  console.log(this.ansArr);
+},
     getQuizInfo() {
       const questionnaireIdToFind = this.$route.params.wantId;
       this.questionnaireId = questionnaireIdToFind;
 
-      this.checkinfo = {};
+      this.doquestArr = {}; // 使用 doquestArr 替代 
       if (this.searchAllList.questionList) {
 
         for (const question of this.searchAllList.questionList) {
           if (question.questionType === 'text') {
             // 处理文本类型问题
-            this.checkinfo[question.questionId] = ''; // 或者初始化为其他默认值
+            this.doquestArr[question.questionId] = ''; // 或者初始化为其他默认值
           } else if (question.optionsType === 'radio' || question.optionsType === 'checkbox') {
             // 处理单选或多选类型问题
             for (let i = 0; i < question.options.split(';').length; i++) {
               const key = question.questionId + '_' + i;
-              this.checkinfo[key] = false; // 初始化为 false，表示未选中
+              this.doquestArr[key] = false; // 初始化为 false，表示未选中
             }
           }
         }
@@ -76,84 +88,19 @@ export default {
           if (quizData) {
             this.searchAllList.questionnaire = quizData.questionnaire;
             this.searchAllList.questionList = quizData.questionList;
+            this.set_ansArr()
           } else {
             console.error('Quiz data not found for questionnaire ID: ', questionnaireIdToFind);
           }
         })
         .catch((error) => console.error('Error:', error));
     },
-    // 在 processSelectedOptions 方法中
-    processSelectedOptions() {
-      const selectedOptions = [];
-
-      for (const key in this.checkinfo) {
-        if (this.checkinfo[key]) {
-          const [questionId, index] = key.split('_');
-          const optionText = this.searchAllList.questionList.find(item => item.questionId == questionId)?.optionText;
-
-          selectedOptions.push({
-            questionId,
-            optionIndex: parseInt(index),
-            optionValue: this.checkinfo[key],
-            optionTextSplit: optionText ? optionText.split(';') : [],
-
-          });
-        }
-      }
-
-      const sortedOptions = {};
-
-      // 將選項按照 questionId 分類
-      for (const option of selectedOptions) {
-        if (!sortedOptions[option.questionId]) {
-          sortedOptions[option.questionId] = [];
-        }
-        sortedOptions[option.questionId].push(option);
-      }
-
-      let ans = ""; // 用來儲存所有答案
-
-      // 將分類後的選項按要求處理並整合到 ans 中
-      for (const questionId in sortedOptions) {
-        if (["name", "phoneNumber", "email"].includes(questionId)) {
-          continue; // 排除基本資料
-        }
-
-        const options = sortedOptions[questionId];
-
-        options.sort((a, b) => a.optionIndex - b.optionIndex);
-
-        const answers = options.map(option => {
-          if (isNaN(option.optionIndex)) {
-            return option.optionValue;
-          } else {
-            return option.optionTextSplit[option.optionIndex];
-          }
-        });
-
-        // 如果是文本类型问题，将答案直接添加到 ans 中
-        ans += answers.join(';') + ';'; // 以分號結尾
-      }
-
-      // 去除最後一個分號
-      if (ans.endsWith(';')) {
-        ans = ans.slice(0, -1);
-      }
-      JSON.stringify(this.hi);
-      console.log(`Answer: ${ans}`);
-      this.hi = ans;
-      console.log(this.hi);
-    },
 
 
     async userCreate() {
-  this.processSelectedOptions();
-
-  if (!this.doquestArr.name || !this.doquestArr.phoneNumber || !this.doquestArr.email) {
-    alert("需要全部輸入");
-    return;
-  }
-
+      console.log(this.ansArr)
+      // console.log(this.che)
+      // console.log(this.tex);
   const userResponse = {
     user: {
       quizId: this.questionnaireId,
@@ -164,38 +111,34 @@ export default {
     userAnswerList: [
       {
         quizId: this.questionnaireId,
-        ansNumber: 0,
-        optionsType: 0,  // 注意这里的 question 需要从某处获取
-        ans: this.hi,
+        ansNumber: "",
+        optionsType: "", // 添加引號
+        ans: this.option, // 添加引號
       }
     ]
   };
+console.log(userResponse);
+  // try {
+  //   const response = await fetch('http://localhost:8080/api/quiz/createUserInfo', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify(userResponse),
+  //   });
 
-  console.log('userResponse:', userResponse);
-
-  try {
-    const response = await fetch('http://localhost:8080/api/quiz/createUserInfo', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userResponse),
-    });
-
-    // 处理响应
-    if (response.ok) {
-      alert("填寫問卷成功");
-      console.log('Answers submitted successfully');
-    } else {
-      console.error('Failed to submit answers');
-    }
-  } catch (error) {
-    // 处理网络或其他错误
-    console.log(JSON.stringify(userResponse));
-    console.error('Error submitting answers:', error);
-  }
-},
-
+  //   // 處理響應
+  //   if (response.ok) {
+  //     alert("填寫問卷成功");
+  //     console.log('Answers submitted successfully');
+  //   } else {
+  //     console.error('Failed to submit answers');
+  //   }
+  // } catch (error) {
+  //   // 處理網絡或其他錯誤
+  //   console.error('Error submitting answers:', error);
+  // }
+}
 
 
   },
@@ -232,26 +175,25 @@ export default {
           <label>問題 {{ index + 1 }}: {{ question.qTitle }}</label>
 
 
-          <div v-if="question.optionsType === 'radio'">
-            <div v-for="(option, optionIndex) in question.options.split(';')" :key="optionIndex">
-              <input type="radio" :id="'q_' + index + '_o_' + optionIndex" :value="option"
-                v-model="checkinfo[question.questionId + '_radio_' + optionIndex]" :name="index" />
-              <label :for="'q_' + index + '_o_' + optionIndex">{{ option }}</label>
-            </div>
-          </div>
+          <div v-if="question.optionsType == 'radio'">
+  <div v-for="(option, optionIndex) in question.options.split(';')" :key="optionIndex">
+    <input type="radio" :id="'q_' + index + '_o_' + optionIndex" :value="option"
+      v-model="ansArr[index].ans"  />
+    <label :for="'q_' + index + '_o_' + optionIndex">{{ option }}</label>
+  </div>
+</div>
 
-          <!-- 多选部分 -->
-          <div v-else-if="question.optionsType === 'checkbox'">
-            <div v-for="(option, optionIndex) in question.options.split(';')" :key="optionIndex">
-              <input type="checkbox" :id="'q_' + index + '_o_' + optionIndex" :value="option"
-                v-model="checkinfo[question.questionId + '_o_' + optionIndex]" />
-              <label :for="'q_' + index + '_o_' + optionIndex">{{ option }}</label>
-            </div>
-          </div>
+<div v-if="question.optionsType == 'checkbox'">
+  <div v-for="(option, optionIndex) in question.options.split(';')" :key="optionIndex">
+    <input type="checkbox" :id="'q_' + index + '_o_' + optionIndex" :value="option"
+      v-model="ansArr[index].ans[optionIndex]" :name="index" />
+    <label :for="'q_' + index + '_o_' + optionIndex">{{ option }}</label>
+  </div>
+</div>
 
-          <div v-else-if="question.optionsType === 'text'" class="input-wrapper">
-            <input type="text" v-model="checkinfo[question.questionId]">
-          </div>
+<div v-if="question.optionsType == 'text'" class="input-wrapper">
+  <input type="text" v-model="ansArr[index].ans">
+</div>
         </div>
 
       </div>
