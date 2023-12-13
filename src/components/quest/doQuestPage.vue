@@ -11,18 +11,22 @@ export default {
 
       page: 1,
       doquestArr: [], //現在更改為陣列
-  
+
       hi: '',
-      singleArray:[],
-      multipleArray:[],
-      
-      textArray:[],
-      
+      singleArray: [],
+      multipleArray: [],
+
+      textArray: [],
+      doquestArr: {
+      name: '',
+      phoneNumber: '',  // 修正此处的属性名
+      email: '',
+    },
 
     };
   },
-  computed:{
-    
+  computed: {
+
 
   },
 
@@ -91,7 +95,8 @@ export default {
             questionId,
             optionIndex: parseInt(index),
             optionValue: this.checkinfo[key],
-            optionTextSplit: optionText ? optionText.split(';') : []
+            optionTextSplit: optionText ? optionText.split(';') : [],
+
           });
         }
       }
@@ -136,62 +141,61 @@ export default {
       }
       JSON.stringify(this.hi);
       console.log(`Answer: ${ans}`);
-            this.hi = ans;
-            console.log(this.hi);
+      this.hi = ans;
+      console.log(this.hi);
     },
-    
+
 
     async userCreate() {
-      try {
-        this.processSelectedOptions();
+  this.processSelectedOptions();
 
-        if (!this.doquestArr.name || !this.doquestArr.phoneNumder || !this.doquestArr.email) {
-          // 提示用户输入姓名、电话号码和电子邮件
-          // 你可以使用适当的 UI 库或弹出框库来显示提示信息
-          alert("需要全部輸入");
+  if (!this.doquestArr.name || !this.doquestArr.phoneNumber || !this.doquestArr.email) {
+    alert("需要全部輸入");
+    return;
+  }
 
-          return;
-        }      // 提示用户输入姓名、电话号码和电子邮件
-      
-        const userResponse = {
-          userList: [
-            {
-              quizId: this.questionnaireId,
-              phoneNumber: this.doquestArr.phoneNumder,
-              name: this.doquestArr.name,
-              email: this.doquestArr.email,
-              ans: this.hi
-            }
-          ]
-        };
-
-        console.log('userResponse:', userResponse); // 添加这行
-        const response = await fetch('http://localhost:8080/api/quiz/usercreate', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(userResponse)
-        });
-
-        // Handle the response as needed
-        if (response.ok) {
-          alert("填寫問卷成功");
-
-          // this.$router.push('/frontQuestPage');
-
-          console.log('Answers submitted successfully');
-        } else {
-
-          console.error('Failed to submit answers');
-        }
-      } catch (error) {
-        // Handle network or other errors
-        console.log(JSON.stringify(userResponse));
-
-        console.error('Error submitting answers:', error);
-      }
+  const userResponse = {
+    user: {
+      quizId: this.questionnaireId,
+      name: this.doquestArr.name,
+      phoneNumber: this.doquestArr.phoneNumber,
+      email: this.doquestArr.email,
     },
+    userAnswerList: [
+      {
+        quizId: this.questionnaireId,
+        ansNumber: 0,
+        optionsType: 0,  // 注意这里的 question 需要从某处获取
+        ans: this.hi,
+      }
+    ]
+  };
+
+  console.log('userResponse:', userResponse);
+
+  try {
+    const response = await fetch('http://localhost:8080/api/quiz/createUserInfo', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userResponse),
+    });
+
+    // 处理响应
+    if (response.ok) {
+      alert("填寫問卷成功");
+      console.log('Answers submitted successfully');
+    } else {
+      console.error('Failed to submit answers');
+    }
+  } catch (error) {
+    // 处理网络或其他错误
+    console.log(JSON.stringify(userResponse));
+    console.error('Error submitting answers:', error);
+  }
+},
+
 
 
   },
@@ -203,7 +207,7 @@ export default {
     <div class="doQuestHeader" v-if="searchAllList.questionnaire">
       <span>{{ searchAllList.questionnaire.startDate }}~~{{ searchAllList.questionnaire.endDate }}</span>
       <h6>問卷名稱:{{ searchAllList.questionnaire.title }}</h6>
-      <h6>問卷描述:{{ searchAllList.questionnaire.description }}</h6>   
+      <h6>問卷描述:{{ searchAllList.questionnaire.description }}</h6>
 
     </div>
     <div class="backToFix" v-if="page === 1">
@@ -214,7 +218,7 @@ export default {
         </div>
         <div>
           <label for="phoneNumder">PhoneNumber</label>
-          <input v-model="doquestArr.phoneNumder" type="text" id="phoneNumder">
+          <input v-model="doquestArr.phoneNumber" type="text" id="phoneNumder">
         </div>
         <div>
           <label for="email">Email</label>
@@ -231,7 +235,7 @@ export default {
           <div v-if="question.optionsType === 'radio'">
             <div v-for="(option, optionIndex) in question.options.split(';')" :key="optionIndex">
               <input type="radio" :id="'q_' + index + '_o_' + optionIndex" :value="option"
-                v-model="checkinfo[question.questionId + '_radio_' + optionIndex]" :name="index"/>
+                v-model="checkinfo[question.questionId + '_radio_' + optionIndex]" :name="index" />
               <label :for="'q_' + index + '_o_' + optionIndex">{{ option }}</label>
             </div>
           </div>
@@ -372,4 +376,5 @@ export default {
   max-height: 200px;
   /* 设置输入框的最大高度，根据需要调整 */
 
-}</style>
+}
+</style>

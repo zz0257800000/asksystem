@@ -1,5 +1,6 @@
 <script>
 
+
 export default {
 
   data() {
@@ -11,7 +12,6 @@ export default {
 
       page: 1,
       doquestArr: [], //現在更改為陣列
-  
       hi: ''
 
     };
@@ -20,11 +20,14 @@ export default {
   mounted() {
 
     this.getQuizInfo();
+   
+
 
   },
   methods: {
     getQuizInfo() {
-      const questionnaireIdToFind = this.$route.params.answerId;
+    
+      const questionnaireIdToFind = this.$route.params.quizId;
       this.questionnaireId = questionnaireIdToFind;
 
       this.checkinfo = {};
@@ -44,6 +47,7 @@ export default {
         }
         // ...其他代码
       }
+      
       console.log("本頁頁碼 " + questionnaireIdToFind);
       fetch(`http://localhost:8080/api/quiz/searchParam?id=${questionnaireIdToFind}`, {
         method: 'GET',
@@ -69,112 +73,35 @@ export default {
         })
         .catch((error) => console.error('Error:', error));
     },
-    // 在 processSelectedOptions 方法中
-    processSelectedOptions() {
-      const selectedOptions = [];
+    userAnswerInfo() {
+      const questionnaireIdToFind = this.$route.params.quizId;
 
-      for (const key in this.checkinfo) {
-        if (this.checkinfo[key]) {
-          const [questionId, index] = key.split('_');
-          const optionText = this.searchAllList.questionList.find(item => item.questionId == questionId)?.optionText;
-
-          selectedOptions.push({
-            questionId,
-            optionIndex: parseInt(index),
-            optionValue: this.checkinfo[key],
-            optionTextSplit: optionText ? optionText.split(';') : []
-          });
-        }
-      }
-
-      const sortedOptions = {};
-
-      // 將選項按照 questionId 分類
-      for (const option of selectedOptions) {
-        if (!sortedOptions[option.questionId]) {
-          sortedOptions[option.questionId] = [];
-        }
-        sortedOptions[option.questionId].push(option);
-      }
-
-      let ans = ""; // 用來儲存所有答案
-
-      // 將分類後的選項按要求處理並整合到 ans 中
-      for (const questionId in sortedOptions) {
-        if (["name", "phoneNumber", "email"].includes(questionId)) {
-          continue; // 排除基本資料
-        }
-
-        const options = sortedOptions[questionId];
-
-        options.sort((a, b) => a.optionIndex - b.optionIndex);
-
-        const answers = options.map(option => {
-          if (isNaN(option.optionIndex)) {
-            return option.optionValue;
-          } else {
-            return option.optionTextSplit[option.optionIndex];
+      console.log(questionnaireIdToFind);
+      fetch(`http://localhost:8080/api/quiz/user/showAnswer?quizId=${questionnaireIdToFind}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
           }
-        });
-
-        // 如果是文本类型问题，将答案直接添加到 ans 中
-        ans += answers.join(';') + ';'; // 以分號結尾
-      }
-
-      // 去除最後一個分號
-      if (ans.endsWith(';')) {
-        ans = ans.slice(0, -1);
-      }
-      JSON.stringify(this.hi);
-      console.log(`Answer: ${ans}`);
-            this.hi = ans;
-            console.log(this.hi);
+          return response.json();
+        })
+        .then((data) => {
+          console.log(data);
+          
+          
+        })
+        .catch((error) => console.error('Error:', error));
+    },  
+     showDetailPage() {
+      // 使用编程式导航返回/showDetailPage页面
+      this.$router.push(`/showDetailPage/${this.questionnaireId}`);
     },
-    
-
-    async userCreate() {
-      try {
-        this.processSelectedOptions();
-
-      
-        const userResponse = {
-          userList: [
-            {
-              quizId: this.questionnaireId,
-              phoneNumber: this.doquestArr.phoneNumder,
-              name: this.doquestArr.name,
-              email: this.doquestArr.email,
-              ans: this.hi
-            }
-          ]
-        };
-
-        console.log('userResponse:', userResponse); // 添加这行
-        const response = await fetch('http://localhost:8080/api/quiz/usercreate', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(userResponse)
-        });
-
-        // Handle the response as needed
-        if (response.ok) {
-
-          this.$router.push(`/showDetailPage/${this.questionnaireId}`);
-
-          console.log('Answers submitted successfully');
-        } else {
-
-          console.error('Failed to submit answers');
-        }
-      } catch (error) {
-        // Handle network or other errors
-        console.log(JSON.stringify(userResponse));
-
-        console.error('Error submitting answers:', error);
-      }
-    },
+   
+  
 
 
   },
@@ -234,7 +161,8 @@ export default {
         </div>
 
       </div>
-      <button @click="userCreate()" class="submit-button">返回統計情報</button>
+      
+      <button @click="showDetailPage()" class="submit-button">返回統計情報</button>
 
     </div>
   </div>

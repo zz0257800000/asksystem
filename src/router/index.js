@@ -28,7 +28,7 @@ const router = createRouter({
       component: () => import('../components/quest/doQuestPage.vue'),
     },
     {
-      path: "/questHome/answerPage/:answerId",
+      path: "/questHome/answerPage/:userlistId/:quizId",
       name: "questHome/answerPage",
       component: () => import('../components/quest/answerPage.vue'),
     },

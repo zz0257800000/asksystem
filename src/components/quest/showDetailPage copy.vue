@@ -13,21 +13,22 @@ export default {
         };
     },
     mounted() {
-        this.fetchUserList();
+        this.fetchUser();
+
     },
 
 
     methods: {
 
 
-        async fetchUserList() {
+        async fetchUser() {
             const questionnaireIdToFind = this.$route.params.showDetailPageid;
             this.questionnaireId = questionnaireIdToFind;
 
-            console.log("本頁頁碼 " + questionnaireIdToFind);
+            console.log("問卷頁碼 " + questionnaireIdToFind);
 
             try {
-                const response = await fetch(`http://localhost:8080/api/quiz/userget?id=${questionnaireIdToFind}`, {
+                const response = await fetch(`http://localhost:8080/api/quiz/user/showInfo?id=${questionnaireIdToFind}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -56,6 +57,7 @@ export default {
                 console.error('Error:', error);
             }
         },
+        
 
     }
 };
@@ -73,8 +75,9 @@ export default {
         <table>
           <thead>
             <tr>
-              <th>＃</th>
-              <th>現在のアンケート番号</th>
+              
+              <th>填寫人編號</th>
+              <th>問卷編號</th>
               <th>名前</th>
               <th>電話</th>
               <th>メール</th>
@@ -84,14 +87,14 @@ export default {
           </thead>
           <tbody>
             <tr v-for="(info, index) in searchAllList.userList" :key="index">
-              <td>{{ index + 1 }}</td>
+              <td>{{ info.userlistId }}</td>
               <td>{{ info.quizId }}</td>
               <td>{{ info.name }}</td>
               <td>{{ info.phoneNumber }}</td>
               <td>{{ info.email }}</td>
               <td>{{ info.date_time }}</td>
               <td>
-                <router-link v-if="info" :to="'/questHome/answerPage/' + this.questionnaireId" title="アンケート回答状況">
+                <router-link v-if="info" :to="'/questHome/answerPage/' + info.userlistId  + '/' + info.quizId" title="アンケート回答状況">
                   <i class="fa-solid fa-feather"></i>
                 </router-link>
               </td>
