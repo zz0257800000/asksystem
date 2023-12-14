@@ -1,6 +1,4 @@
 <script>
-
-
 export default {
 
   data() {
@@ -13,16 +11,23 @@ export default {
       page: 1,
       doquestArr: [], //現在更改為陣列
       hi: '', 
+      userAnswerList: [
+        
+      ],
       userAnswers: [], // 保存用户答案数据
+      writeNum: '',
 
     };
-  },
+  },  
+ 
 
   mounted() {
 
     this.getQuizInfo();
     this.userAnswerInfo();
-
+    console.log(this.$route);
+  const writeNumber = this.$route.params.userlistId;
+  this.writeNum = writeNumber;
 
 
   },
@@ -31,7 +36,8 @@ export default {
     
       const questionnaireIdToFind = this.$route.params.quizId;
       this.questionnaireId = questionnaireIdToFind;
-
+      const writeNumber = this.$route.params.userlistId;
+      this.writeNum = writeNumber;
       this.checkinfo = {};
       if (this.searchAllList.questionList) {
 
@@ -77,7 +83,8 @@ export default {
     },
     userAnswerInfo() {
       const questionnaireIdToFind = this.$route.params.quizId;
-
+      const writeNumber = this.$route.params.userlistId;
+      this.writeNum = writeNumber;
       fetch(`http://localhost:8080/api/quiz/user/showAnswer?quizId=${questionnaireIdToFind}`, {
         method: 'GET',
         headers: {
@@ -92,7 +99,7 @@ export default {
         })
         .then((data) => {
           console.log(data);
-          this.userAnswers = data;
+          this.userAnswers = data.filter(answer => answer.ulId === parseInt(writeNumber));
 
           
         })
@@ -113,52 +120,43 @@ export default {
 <template>
   <div class="doQuestPageBody">
     <div class="doQuestHeader" v-if="searchAllList.questionnaire">
+      <h3>填寫人編號:{{this.writeNum}}</h3>
       <span>{{ searchAllList.questionnaire.startDate }}~~{{ searchAllList.questionnaire.endDate }}</span>
       <h6>問卷名稱:{{ searchAllList.questionnaire.title }}</h6>
       <h6>問卷描述:{{ searchAllList.questionnaire.description }}</h6>   
 
     </div>
     <div class="backToFix" v-if="page === 1">
-      <div class="fixedQuest">
-        <div>
-          <label for="name">Name</label>
-          <input v-model="doquestArr.name" type="text" disabled="disabled" id="name">
-        </div>
-        <div>
-          <label for="phoneNumder">PhoneNumber</label>
-          <input v-model="doquestArr.phoneNumder" type="text" disabled="disabled" id="phoneNumder">
-        </div>
-        <div>
-          <label for="email">Email</label>
-          <input v-model="doquestArr.email" type="text" disabled="disabled" id="email">
-        </div>
-
-
-      </div>
+ 
       <div class="fluidQuest">
         <div v-for="(question, index) in searchAllList.questionList" :key="index">
           <label>問題 {{ index + 1 }}: {{ question.qTitle }}</label>
 
 
           <div v-if="question.optionsType === 'radio'">
+            
             <div v-for="(option, optionIndex) in question.options.split(';')" :key="optionIndex">
               <input type="radio" disabled="disabled" :id="'q_' + index + '_o_' + optionIndex" :value="option"
-                v-model="checkinfo[question.questionId + '_radio_' + optionIndex]" name="A"  />
-              <label :for="'q_' + index + '_o_' + optionIndex">{{ option }}</label>
-            </div>
+                v-model="userAnswers[index].ans" name="A"  />
+              <label :for="'q_' + index + '_o_' + optionIndex">{{  option }}</label>
+              {{ userAnswers[index].ans === '非常安全' && optionIndex === 0 ? '✔' : '' }} 
+                     </div>
           </div>
 
           <!-- 多选部分 -->
           <div v-else-if="question.optionsType === 'checkbox'">
             <div v-for="(option, optionIndex) in question.options.split(';')" :key="optionIndex">
+
               <input type="checkbox"  disabled="disabled" :id="'q_' + index + '_o_' + optionIndex" :value="option"
-                v-model="checkinfo[question.questionId + '_o_' + optionIndex]" />
-              <label :for="'q_' + index + '_o_' + optionIndex">{{ option }}</label>
+                v-model="userAnswers[index].ansArray" />
+              <label :for="'q_' + index + '_o_' + optionIndex">{{ option  }}</label>
+              <span v-if="userAnswers[index].ans && userAnswers[index].ans.includes(option)"> ✔</span>
             </div>
           </div>
 
           <div v-else-if="question.optionsType === 'text'" class="input-wrapper">
-            <input type="text" disabled="disabled"  v-model="checkinfo[question.questionId]">
+            <input type="text" disabled="disabled"  v-model="userAnswers[index].ans">
+
           </div>
         </div>
 

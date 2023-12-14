@@ -17,9 +17,9 @@ export default {
         ansNumber:0 ,
         optionsType:"" ,
         ans: "",
-        rad:"",
+       
         che:[],
-        tex:"",
+      
       },
     };
   },
@@ -29,6 +29,7 @@ export default {
   },
 
   mounted() {
+    this.set_ansArr(); // 调用初始化方法
 
     this.getQuizInfo();
 
@@ -41,9 +42,9 @@ export default {
       ansNumber: 0,
       optionsType: "",
       ans: "",
-      rad: "",
+     
       che: [],
-      tex: "",
+     
     });
   }
   console.log(this.ansArr);
@@ -98,46 +99,54 @@ export default {
 
 
     async userCreate() {
-      console.log(this.ansArr)
-      // console.log(this.che)
-      // console.log(this.tex);
+      if (!this.doquestArr.name || !this.doquestArr.phoneNumber || !this.doquestArr.email) {
+          // 提示用户输入姓名、电话号码和电子邮件
+          // 你可以使用适当的 UI 库或弹出框库来显示提示信息
+          alert("需要全部輸入");
+
+          return;
+        }  
   const userResponse = {
+    
     user: {
       quizId: this.questionnaireId,
       name: this.doquestArr.name,
       phoneNumber: this.doquestArr.phoneNumber,
       email: this.doquestArr.email,
     },
-    userAnswerList: [
-      {
+    userAnswerList: this.ansArr.map((answer, index) => {
+      return {
         quizId: this.questionnaireId,
-        ansNumber: "",
-        optionsType: "", // 添加引號
-        ans: this.option, // 添加引號
-      }
-    ]
+        ansNumber: index + 1,
+        optionsType: this.searchAllList.questionList[index].optionsType,
+        ans: this.searchAllList.questionList[index].optionsType === 'checkbox'
+    ? answer.che.join(';')  // 如果是 checkbox，将数组转换为分号分隔的字符串
+    : answer.ans,
+      };
+    }),
   };
 console.log(userResponse);
-  // try {
-  //   const response = await fetch('http://localhost:8080/api/quiz/createUserInfo', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify(userResponse),
-  //   });
 
-  //   // 處理響應
-  //   if (response.ok) {
-  //     alert("填寫問卷成功");
-  //     console.log('Answers submitted successfully');
-  //   } else {
-  //     console.error('Failed to submit answers');
-  //   }
-  // } catch (error) {
-  //   // 處理網絡或其他錯誤
-  //   console.error('Error submitting answers:', error);
-  // }
+  try {
+    const response = await fetch('http://localhost:8080/api/quiz/createUserInfo', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userResponse),
+    });
+
+    // 處理響應
+    if (response.ok) {
+      alert("填寫問卷成功");
+      console.log('Answers submitted successfully');
+    } else {
+      console.error('Failed to submit answers');
+    }
+  } catch (error) {
+    // 處理網絡或其他錯誤
+    console.error('Error submitting answers:', error);
+  }
 }
 
 
@@ -186,7 +195,7 @@ console.log(userResponse);
 <div v-if="question.optionsType == 'checkbox'">
   <div v-for="(option, optionIndex) in question.options.split(';')" :key="optionIndex">
     <input type="checkbox" :id="'q_' + index + '_o_' + optionIndex" :value="option"
-      v-model="ansArr[index].ans[optionIndex]" :name="index" />
+      v-model="ansArr[index].che" :name="index" />
     <label :for="'q_' + index + '_o_' + optionIndex">{{ option }}</label>
   </div>
 </div>
