@@ -48,7 +48,7 @@ export default {
       const newQuestion = {
         quid: this.questArr.length + 1,  // 使用题目的索引作为 quid
 
-        questionType: 'radio', // 設置默認的問題類型
+        optionsType: 'radio', // 設置默認的問題類型
         question: '',
         options: [],
       };
@@ -179,7 +179,7 @@ export default {
       <div class="createQuest" v-for="(quest, questionIndex) in questArr" :key="questionIndex">
         <!-- 質問タイプのドロップダウン -->
         <label>第{{ questionIndex + 1 }}問</label>
-        <select v-model="quest.questionType">
+        <select v-model="quest.optionsType">
           <option v-for="(type, index) in questionTypes" :key="index" :value="type">
             {{ type === 'radio' ? '単一選択' : type === 'checkbox' ? '複数選択' : '記述' }}
           </option>

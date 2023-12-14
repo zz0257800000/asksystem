@@ -139,6 +139,8 @@ console.log(userResponse);
     // 處理響應
     if (response.ok) {
       alert("填寫問卷成功");
+      this.$router.push('/questHome');
+
       console.log('Answers submitted successfully');
     } else {
       console.error('Failed to submit answers');

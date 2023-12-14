@@ -213,7 +213,7 @@ export default {
 
                 })
                 .catch(error => console.error('Error:', error));
-            // this.$router.push('/questHome');
+            this.$router.push('/questHome');
 
             alert("更新問卷成功")
         },
