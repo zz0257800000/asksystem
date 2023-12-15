@@ -139,7 +139,7 @@ export default {
               <input type="radio" disabled="disabled" :id="'q_' + index + '_o_' + optionIndex" :value="option"
                 v-model="userAnswers[index].ans" name="A"  />
               <label :for="'q_' + index + '_o_' + optionIndex">{{  option }}</label>
-              {{ userAnswers[index].ans === '非常安全' && optionIndex === 0 ? '✔' : '' }} 
+              <span v-if="userAnswers[index].ans === option">✔</span>
                      </div>
           </div>
 

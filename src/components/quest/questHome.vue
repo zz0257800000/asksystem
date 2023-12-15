@@ -167,18 +167,18 @@ export default {
             </td>
             <td>{{ index + 1 }}</td>
             <td>
-              <router-link :to="'/questHome/doQuestPage/' + quest.id" title="アンケート">{{ quest.title }}</router-link>
+              <router-link :to="'/questHome/doQuestPage/' + quest.id" title="アンケート" class="ruBtn" >{{ quest.title }}</router-link>
             </td>
             <td :style="{ 'color': quest.published ? 'green' : 'red' }">{{ quest.published ? '開始中' : '終了中' }}</td>
             <td>{{ quest.startDate }}</td>
             <td>{{ quest.endDate }}</td>
             <td>
-              <router-link :to="'/showDetailPage/' + quest.id" title="統計情報を見る">統計情報を見る</router-link>
+              <router-link :to="'/showDetailPage/' + quest.id" title="統計情報を見る" class="ruBtn">統計情報を見る</router-link>
             </td>
 
 
             <td>
-              <router-link :to="'/questHome/EditQuestionnaire/' + quest.id" title="更改問卷"> <i class="fa-solid fa-pencil"></i></router-link>
+              <router-link :to="'/questHome/EditQuestionnaire/' + quest.id" title="更改問卷" class="ruBtn"> <i class="fa-solid fa-pencil"></i></router-link>
             </td>
           </tr>
         </tbody>
@@ -193,9 +193,14 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+.ruBtn{
+  color: rgb(28, 133, 232);
+  text-decoration: none;
+}
 .selected-row {
   background-color: red;
   transition: background-color 0.3s;
+  color: #e2ff24;
 }
 
 .selected-row:hover {
